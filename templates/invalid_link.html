@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<!-- This page is displayed when someone navigates to a verify email or reset password link
+     but their security token is wrong. This can either mean the user has clicked on a
+     stale link (i.e. re-click on a password reset link after resetting their password) or
+     (rarely) this could be a sign of a malicious user trying to tamper with your app.
+ -->
+<html>
+  <head>
+  <title>Invalid Link</title>
+  <style type='text/css'>
+    body {
+      background-color: black;
+      color: white;
+      font-family: 'Orbitron', sans-serif;
+    }
+
+    .container {
+      border-width: 0px;
+      display: block;
+      font: inherit;
+      font-size: 16px;
+      /* height: 25px;
+      line-height: 16px;
+      margin: 45px 0px 0px 45px;
+      padding: 0px 8px 0px 8px; */
+      position: relative;
+      padding: 0.5rem;
+      border: rgb(29,242,255) 1px solid;
+      border-radius: 0.5rem;
+    }
+
+    h1 {
+      display: block;
+      font: inherit;
+      font-size: 30px;
+      height: 30px;
+      line-height: 30px;
+      margin: 0 0 15px 0;
+      padding: 0 0 0 0;
+    }
+
+    h2,
+    h3,
+    h4,
+    h5 {
+      display: block;
+      font: inherit;
+      font-size: 20px;
+      height: 20px;
+      line-height: 20px;
+      margin: 0 0 15px 0;
+      padding: 0 0 0 0;
+    }
+
+    a
+    {
+      color:rgb(29,242,255);
+    }
+  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
+  </head>
+
+  <body> 
+    <div class="container">
+      <h1>Invalid Link</h1>
+    </div> 
+  </body>
+</html>
