@@ -11,7 +11,7 @@ var secrets = {};
 
 secrets.sesAPIKey = process.env['sesAPIKey'];
 secrets.sesAPISecret = process.env['sesAPISecret'];
-secrets.mongoDatabaseURI = process.env['exmongoDatabaseURI'];
+secrets.mongoDatabaseURI = process.env['mongoDatabaseURI'];
 secrets.appId = process.env['appId'];
 secrets.masterKey = process.env['masterKey'];
 secrets.bucketName = process.env['bucketName'];
@@ -21,6 +21,7 @@ var config = {
     client: process.env['clientId'],
     appName: process.env['appName']
 };
+
 var baseServerUrl = 'http://localhost:' + config.port + '/' + config.client;
 var publicBaseServerUrl = 'https://test-parse.aamgeocloud.com/' + config.client;
 

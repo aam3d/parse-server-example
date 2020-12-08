@@ -1,0 +1,177 @@
+Description: > 
+
+  This deploys the service on the infrastrucure based off the required parameters;
+    --- client name
+    --- environment
+
+  In order for the deployment to work a secrets manager document must exist 
+  and its mapping must be addedd below under the correct environment and client name. 
+  Mappings must include the parameters; 
+    --- secrets [The ARN of the secrets manager document created]
+    --- domainName [The unique name to point too in browser]
+    --- priority [A environment-unique integer that the load balancer will use to check host-header rules]
+
+  If you add new parameters in the secrets manager document, they must be added to the environment within the 
+  task definition below, so that they show up as environment variables.
+
+Parameters:
+
+  Client:
+    Description: The name of the client, generally in lowercase
+    Type: String
+
+  Environment:
+    Description: The name of the environment to deploy to
+    AllowedValues: 
+    - dev
+    - prd
+    Type: String
+
+  DockerImage:
+    Description: The docker image to deploy to the cluster
+    Type: String
+
+Mappings:
+
+  prd:
+
+    dockertest:
+      secrets: arn:aws:secretsmanager:ap-southeast-2:998914283275:secret:aam-ssm-secret-parse-server-test-dev-Y86AiN
+      domainName: dockertestprd.aamgeocloud
+      priority: 1
+
+  dev:
+    
+    test:
+      secrets: arn:aws:secretsmanager:ap-southeast-2:998914283275:secret:aam-ssm-secret-parse-server-test-dev-Y86AiN
+      domainName: test123.aamgeocloud.com
+      priority: 1
+
+    dockertest:
+      secrets: arn:aws:secretsmanager:ap-southeast-2:998914283275:secret:aam-ssm-secret-parse-server-dockertest-dev-OBWF7H
+      domainName: dockertest.aamgeocloud.com
+      priority: 2
+
+    woollahra: 
+      secrets: arn:aws:secretsmanager:ap-southeast-2:998914283275:secret:aam-ssm-secret-parse-server-woollahra-dev-APK8fW
+      domainName: woollahratest.aamgeocloud.com
+      priority: 3
+
+    moreland: 
+      secrets: arn:aws:secretsmanager:ap-southeast-2:998914283275:secret:aam-ssm-secret-parse-server-moreland-dev-tvZdJn
+      domainName: morelandtest.aamgeocloud.com
+      priority: 4
+
+Resources: 
+
+  ListenerRule:
+    Type: AWS::ElasticLoadBalancingV2::ListenerRule
+    DependsOn: TargetGroup
+    Properties:
+      Actions:
+      - Type: forward
+        TargetGroupArn: !Ref TargetGroup
+      Conditions:
+      - Field: host-header
+        HostHeaderConfig:
+          Values:
+          - !FindInMap [ !Ref Environment, !Ref Client, domainName]
+      ListenerArn: 
+        Fn::ImportValue: !Join ["", [ ParseServerAlbListener, !Ref Environment ] ]
+      Priority: !FindInMap [ !Ref Environment, !Ref Client, priority]
+
+  TargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      VpcId: vpc-d920c5bc
+      Port: 8080
+      Protocol: HTTP
+      Matcher:
+        HttpCode: 200-499
+      HealthCheckIntervalSeconds: 60
+      HealthCheckPath: /
+      HealthCheckProtocol: HTTP
+      HealthCheckTimeoutSeconds: 30
+      HealthyThresholdCount: 2
+      UnhealthyThresholdCount: 2
+
+  Service:
+    Type: AWS::ECS::Service
+    DependsOn: ListenerRule
+    Properties: 
+      Cluster: 
+        Fn::ImportValue: !Join ["", [ ECSCluster, !Ref Environment ] ]
+      Role: !Sub arn:aws:iam::${AWS::AccountId}:role/aws-service-role/ecs.amazonaws.com/AWSServiceRoleForECS
+      DesiredCount: 2
+      TaskDefinition: !Ref TaskDefinition
+      DeploymentConfiguration:
+        MaximumPercent: 200
+        MinimumHealthyPercent: 50
+      PlacementStrategies:
+      - Type: spread
+        Field: instanceId
+      LoadBalancers: 
+      - ContainerName: !Sub aam-ecs-service-parse-${Client}-${Environment}
+        ContainerPort: 1343
+        TargetGroupArn: !Ref TargetGroup
+
+  TaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: !Sub aam-ecs-service-parse-${Client}-${Environment}
+      ContainerDefinitions:
+      - Name: !Sub aam-ecs-service-parse-${Client}-${Environment}
+        Image: !Ref DockerImage
+        MemoryReservation: 128
+        PortMappings:
+        - ContainerPort: 1343
+          Protocol: tcp
+        Environment:
+        - Name: sesAPIKey
+          Value: !Join ['', ['{{resolve:secretsmanager:', !FindInMap [ !Ref Environment, !Ref Client, secrets ], ':SecretString:sesAPIKey}}' ]]
+        - Name: sesAPISecret
+          Value: !Join ['', ['{{resolve:secretsmanager:', !FindInMap [ !Ref Environment, !Ref Client, secrets ], ':SecretString:sesAPISecret}}' ]]
+        - Name: mongoDatabaseURI
+          Value: !Join ['', ['{{resolve:secretsmanager:', !FindInMap [ !Ref Environment, !Ref Client, secrets ], ':SecretString:mongoDatabaseURI}}' ]]
+        - Name: appId
+          Value: !Join ['', ['{{resolve:secretsmanager:', !FindInMap [ !Ref Environment, !Ref Client, secrets ], ':SecretString:appId}}' ]]
+        - Name: masterKey
+          Value: !Join ['', ['{{resolve:secretsmanager:', !FindInMap [ !Ref Environment, !Ref Client, secrets ], ':SecretString:masterKey}}' ]]
+        - Name: bucketName
+          Value: !Join ['', ['{{resolve:secretsmanager:', !FindInMap [ !Ref Environment, !Ref Client, secrets ], ':SecretString:bucketName}}' ]]
+        - Name: clientId
+          Value: !Join ['', ['{{resolve:secretsmanager:', !FindInMap [ !Ref Environment, !Ref Client, secrets ], ':SecretString:clientId}}' ]]
+        - Name: appName
+          Value: !Join ['', ['{{resolve:secretsmanager:', !FindInMap [ !Ref Environment, !Ref Client, secrets ], ':SecretString:appName}}' ]]
+        - Name: clientDomain
+          Value: !Join ['', ['{{resolve:secretsmanager:', !FindInMap [ !Ref Environment, !Ref Client, secrets ], ':SecretString:clientDomain}}' ]]
+        - Name: portalUrl
+          Value: !Join ['', ['{{resolve:secretsmanager:', !FindInMap [ !Ref Environment, !Ref Client, secrets ], ':SecretString:portalUrl}}' ]]
+        - Name: portalUser
+          Value: !Join ['', ['{{resolve:secretsmanager:', !FindInMap [ !Ref Environment, !Ref Client, secrets ], ':SecretString:portalUser}}' ]]
+        - Name: portalPass
+          Value: !Join ['', ['{{resolve:secretsmanager:', !FindInMap [ !Ref Environment, !Ref Client, secrets ], ':SecretString:portalPass}}' ]]
+        - Name: appColour
+          Value: !Join ['', ['{{resolve:secretsmanager:', !FindInMap [ !Ref Environment, !Ref Client, secrets ], ':SecretString:appColour}}' ]]
+        LogConfiguration:
+          LogDriver: awslogs
+          Options:
+            awslogs-group: !Ref AWS::StackName
+            awslogs-region: !Ref AWS::Region
+
+  CloudWatchLogsGroup:
+    Type: AWS::Logs::LogGroup
+    Properties: 
+      LogGroupName: !Ref AWS::StackName
+      RetentionInDays: 7 
+
+  RecordSet:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneId: Z12GWCNKT39Y1B
+      Name:  !FindInMap [ !Ref Environment, !Ref Client, domainName]
+      ResourceRecords:
+      - Fn::ImportValue: 
+          !Join ["", [ ParseServerAlbEndpoint, !Ref Environment ] ]
+      TTL: 300
+      Type: CNAME
