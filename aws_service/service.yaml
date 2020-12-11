@@ -35,7 +35,7 @@ Mappings:
 
   prd:
 
-    dockertest:
+    moreland:
       secrets: arn:aws:secretsmanager:ap-southeast-2:998914283275:secret:aam-ssm-secret-parse-server-test-dev-Y86AiN
       domainName: dockertestprd.aamgeocloud
       priority: 1
@@ -83,7 +83,7 @@ Resources:
   TargetGroup:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
     Properties:
-      VpcId: vpc-d920c5bc
+      VpcId: vpc-e92f668e
       Port: 8080
       Protocol: HTTP
       Matcher:

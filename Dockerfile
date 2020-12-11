@@ -7,7 +7,8 @@ RUN apk add --update && apk upgrade
 # Install system packages
 RUN apk add nodejs \
     npm \
-    git
+    git \
+    python3
 
 # Set app directory
 WORKDIR /usr/src/app
