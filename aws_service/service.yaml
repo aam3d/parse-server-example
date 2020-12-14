@@ -122,7 +122,7 @@ Resources:
       ContainerDefinitions:
       - Name: !Sub aam-ecs-service-parse-${Client}-${Environment}
         Image: !Ref DockerImage
-        MemoryReservation: 128
+        MemoryReservation: 192
         PortMappings:
         - ContainerPort: 1343
           Protocol: tcp
