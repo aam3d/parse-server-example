@@ -9,12 +9,11 @@
   },
   "license": "MIT",
   "dependencies": {
-    "express": "~4.11.x",
-    "kerberos": "~0.0.x",
+    "express": "~4.17.x",
     "parse": "~1.8.0",
     "parse-server": "github:aam3d/parse-server#aam-4.3.0-built",
-    "parse-server-simple-ses-adapter-with-template": "github:aam3d/parse-server-simple-ses-adapter#template",
-    "parse-server-s3-adapter": "github:aam3d/parse-server-s3-adapter"
+    "parse-server-s3-adapter": "github:aam3d/parse-server-s3-adapter",
+    "parse-server-simple-ses-adapter-with-template": "github:aam3d/parse-server-simple-ses-adapter#template"
   },
   "scripts": {
     "start": "node index.js",

@@ -11,6 +11,10 @@ const config = {
 
 console.log("CLOUD CODE " + config.appName + " Load...");
 
+// Parse.Cloud.define("initSchema", async (req) => {
+//   var 
+// });
+
 Parse.Cloud.define("getToken", async (req) => {
   try
   {
@@ -57,7 +61,9 @@ Parse.Cloud.define("gltfUsageById", async (req) => {
       {
         if (item.attributes.gltfId == req.params.id)
         {
-          usedInDesigns.push({ id: design.id, title: design.attributes.name, owner: design.attributes.userId });
+          var publicRead = design.attributes.ACL.getPublicReadAccess();
+          var roleRead = design.attributes.ACL.getRoleReadAccess(config.client);
+          usedInDesigns.push({ id: design.id, title: design.attributes.name, creator: design.attributes.creator, public: publicRead, role: roleRead });
           break;
         }
       }
@@ -92,7 +98,9 @@ Parse.Cloud.define("designUsageById", async (req) => {
 
     if(option.attributes.designId == req.params.id)
     {
-      usedInOptions.push({ id: option.id, title: option.attributes.title, creator: option.attributes.creator });
+      var publicRead = option.attributes.ACL.getPublicReadAccess();
+      var roleRead = option.attributes.ACL.getRoleReadAccess(config.client);
+      usedInOptions.push({ id: option.id, title: option.attributes.title, creator: option.attributes.creator, public: publicRead, role: roleRead });
     }
   }
 
@@ -111,7 +119,7 @@ Parse.Cloud.afterSave(Parse.User, async (request) => {
   else if(user.attributes.email && user.attributes.email.includes(config.clientDomain))
   {
      console.log(clientName + " USER");
-     return addUserToRole(user, config.client + '-role');
+     return addUserToRole(user, config.client);
   }
   else
   {
