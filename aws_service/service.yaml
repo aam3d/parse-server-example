@@ -16,7 +16,7 @@ Parameters:
   Environment:
     Description: The name of the environment to deploy to
     AllowedValues: 
-    - dev
+    - stg
     - prd
     Type: String
 
