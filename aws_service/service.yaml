@@ -149,3 +149,11 @@ Resources:
           !Join ["", [ ParseServerAlbEndpoint, !Ref Environment ] ]
       TTL: 300
       Type: CNAME
+
+Outputs:
+
+  DomainName:
+    Value: !Ref DomainName
+
+  DockerImage:
+    Value: !Ref DockerImage
