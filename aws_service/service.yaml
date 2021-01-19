@@ -52,7 +52,7 @@ Resources:
           - !Ref DomainName
       ListenerArn: 
         Fn::ImportValue: !Join ["", [ ParseServerAlbListener, !Ref Environment ] ]
-      Priority: !REf Priorit]
+      Priority: !Ref Priority
 
   TargetGroup:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
