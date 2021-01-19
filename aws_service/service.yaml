@@ -80,7 +80,7 @@ Resources:
       TaskDefinition: !Ref TaskDefinition
       DeploymentConfiguration:
         MaximumPercent: 200
-        MinimumHealthyPercent: 50
+        MinimumHealthyPercent: 100
       PlacementStrategies:
       - Type: spread
         Field: instanceId
