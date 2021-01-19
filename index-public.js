@@ -15,17 +15,19 @@ secrets.mongoDatabaseURI = process.env['mongoDatabaseURI'];
 secrets.appId = process.env['appId'];
 secrets.masterKey = process.env['masterKey'];
 secrets.bucketName = process.env['bucketName'];
+secrets.bucketRegion = process.env['bucketRegion'];
 
 var config = {
-    port: 1343,
-    client: process.env['clientId'],
+    port: process.env['publicPort'],
+    client: process.env['clientId'] + '-public',
+    domain: process.env['publicDomain'],
     appName: process.env['appName']
 };
 
 var baseServerUrl = 'http://localhost:' + config.port + '/' + config.client;
-var publicBaseServerUrl = 'https://test-parse.aamgeocloud.com/' + config.client;
+var publicBaseServerUrl = 'https://' + client.domain + '/' + config.client;
 
-var test = new ParseServer({
+var publicServer = new ParseServer({
     databaseURI: secrets.mongoDatabaseURI,
     cloud: 'cloud/main.js',
     appId: secrets.appId,
@@ -33,36 +35,37 @@ var test = new ParseServer({
     serverURL: baseServerUrl + '/parse',
     appName: config.appName,
     publicServerURL: publicBaseServerUrl + '/parse',
-    verifyUserEmails: true,
-    preventLoginWithUnverifiedEmail: true,
-    emailAdapter: {
-        module: 'parse-server-simple-ses-adapter-with-template',
-        options: {
-            fromAddress: 'no-reply@geocirrus.com',
-            apiKey: secrets.sesAPIKey,
-            apiSecret: secrets.sesAPISecret,
-            domain: 'geocirrus.com',
-            amazon: 'https://email.ap-southeast-2.amazonaws.com'
-        }
-    },
-    filesAdapter: {
-        "module": "parse-server-s3-adapter",
-        "options": {
-            "bucket": secrets.bucketName,
-            // optional:
-            "region": 'us-east-1', // default value
-            "bucketPrefix": config.client + '/', // default value
-            "directAccess": false, // default value
-            "fileAcl": null, // default value
-            "baseUrl": null, // default value
-            "baseUrlDirect": false, // default value
-            "signatureVersion": 'v4', // default value
-            "globalCacheControl": null, // default value. Or 'public, max-age=86400' for 24 hrs Cache-Control
-            "ServerSideEncryption": 'AES256|aws:kms', //AES256 or aws:kms, or if you do not pass this, encryption won't be done
-            "validateFilename": null, // Default to parse-server FilesAdapter::validateFilename.
-            "generateKey": null // Will default to Parse.FilesController.preserveFileName
-        }
-    },
+    // verifyUserEmails: true,
+    // preventLoginWithUnverifiedEmail: true,
+    // caseInsensitive: false,
+    // emailAdapter: {
+    //     module: 'parse-server-simple-ses-adapter-with-template',
+    //     options: {
+    //         fromAddress: 'no-reply@geocirrus.com',
+    //         apiKey: secrets.sesAPIKey,
+    //         apiSecret: secrets.sesAPISecret,
+    //         domain: 'geocirrus.com',
+    //         amazon: 'https://email.ap-southeast-2.amazonaws.com'
+    //     }
+    // },
+    // filesAdapter: {
+    //     "module": "parse-server-s3-adapter",
+    //     "options": {
+    //         "bucket": secrets.bucketName,
+    //         // optional:
+    //         "region": secrets.bucketRegion, // default value
+    //         "bucketPrefix": config.client + '/', // default value
+    //         "directAccess": false, // default value
+    //         "fileAcl": null, // default value
+    //         "baseUrl": null, // default value
+    //         "baseUrlDirect": false, // default value
+    //         "signatureVersion": 'v4', // default value
+    //         "globalCacheControl": null, // default value. Or 'public, max-age=86400' for 24 hrs Cache-Control
+    //         "ServerSideEncryption": 'AES256|aws:kms', //AES256 or aws:kms, or if you do not pass this, encryption won't be done
+    //         "validateFilename": null, // Default to parse-server FilesAdapter::validateFilename.
+    //         "generateKey": null // Will default to Parse.FilesController.preserveFileName
+    //     }
+    // },
     customPages: {
         passwordResetSuccess: publicBaseServerUrl + "/templates/password_reset_success.html",
         verifyEmailSuccess: publicBaseServerUrl + "/templates/verify_email_success.html",
@@ -74,7 +77,7 @@ var test = new ParseServer({
         // parseFrameURL: "./templates/parseFrameURL",
     }
 });
-app.use('/' + config.client + '/parse', test);
+app.use('/' + config.client + '/parse', publicServer);
 
 app.get('/' + config.client + '/hello', function (req, res)
 {
