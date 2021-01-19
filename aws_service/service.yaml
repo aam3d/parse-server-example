@@ -28,7 +28,7 @@ Parameters:
     Description: The domain name of the service
     Type: String
 
-  SecretsFile:
+  Secrets:
     Description: The ARN of the secrets file to use
     Type: String
 
