@@ -4,13 +4,6 @@ Description: >
     --- client name
     --- environment
 
-  In order for the deployment to work a secrets manager document must exist 
-  and its mapping must be addedd below under the correct environment and client name. 
-  Mappings must include the parameters; 
-    --- secrets [The ARN of the secrets manager document created]
-    --- domainName [The unique name to point too in browser]
-    --- priority [A environment-unique integer that the load balancer will use to check host-header rules]
-
   If you add new parameters in the secrets manager document, they must be added to the environment within the 
   task definition below, so that they show up as environment variables.
 
@@ -31,36 +24,17 @@ Parameters:
     Description: The docker image to deploy to the cluster
     Type: String
 
-Mappings:
+  DomainName:
+    Description: The domain name of the service
+    Type: String
 
-  prd:
+  SecretsFile:
+    Description: The ARN of the secrets file to use
+    Type: String
 
-    moreland:
-      secrets: arn:aws:secretsmanager:ap-southeast-2:998914283275:secret:aam-ssm-secret-parse-server-test-dev-Y86AiN
-      domainName: dockertestprd.aamgeocloud
-      priority: 1
-
-  dev:
-    
-    test:
-      secrets: arn:aws:secretsmanager:ap-southeast-2:998914283275:secret:aam-ssm-secret-parse-server-test-dev-Y86AiN
-      domainName: test123.aamgeocloud.com
-      priority: 1
-
-    dockertest:
-      secrets: arn:aws:secretsmanager:ap-southeast-2:998914283275:secret:aam-ssm-secret-parse-server-dockertest-dev-OBWF7H
-      domainName: dockertest.aamgeocloud.com
-      priority: 2
-
-    woollahra: 
-      secrets: arn:aws:secretsmanager:ap-southeast-2:998914283275:secret:aam-ssm-secret-parse-server-woollahra-dev-APK8fW
-      domainName: woollahratest.aamgeocloud.com
-      priority: 3
-
-    moreland: 
-      secrets: arn:aws:secretsmanager:ap-southeast-2:998914283275:secret:aam-ssm-secret-parse-server-moreland-dev-tvZdJn
-      domainName: morelandtest.aamgeocloud.com
-      priority: 4
+  Priority:
+    Description: The load balancer evaluation priority
+    Type: String
 
 Resources: 
 
@@ -75,10 +49,10 @@ Resources:
       - Field: host-header
         HostHeaderConfig:
           Values:
-          - !FindInMap [ !Ref Environment, !Ref Client, domainName]
+          - !Ref DomainName
       ListenerArn: 
         Fn::ImportValue: !Join ["", [ ParseServerAlbListener, !Ref Environment ] ]
-      Priority: !FindInMap [ !Ref Environment, !Ref Client, priority]
+      Priority: !REf Priorit]
 
   TargetGroup:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
@@ -128,31 +102,31 @@ Resources:
           Protocol: tcp
         Environment:
         - Name: sesAPIKey
-          Value: !Join ['', ['{{resolve:secretsmanager:', !FindInMap [ !Ref Environment, !Ref Client, secrets ], ':SecretString:sesAPIKey}}' ]]
+          Value: !Join ['', ['{{resolve:secretsmanager:', !Ref Secrets, ':SecretString:sesAPIKey}}' ]]
         - Name: sesAPISecret
-          Value: !Join ['', ['{{resolve:secretsmanager:', !FindInMap [ !Ref Environment, !Ref Client, secrets ], ':SecretString:sesAPISecret}}' ]]
+          Value: !Join ['', ['{{resolve:secretsmanager:', !Ref Secrets, ':SecretString:sesAPISecret}}' ]]
         - Name: mongoDatabaseURI
-          Value: !Join ['', ['{{resolve:secretsmanager:', !FindInMap [ !Ref Environment, !Ref Client, secrets ], ':SecretString:mongoDatabaseURI}}' ]]
+          Value: !Join ['', ['{{resolve:secretsmanager:', !Ref Secrets, ':SecretString:mongoDatabaseURI}}' ]]
         - Name: appId
-          Value: !Join ['', ['{{resolve:secretsmanager:', !FindInMap [ !Ref Environment, !Ref Client, secrets ], ':SecretString:appId}}' ]]
+          Value: !Join ['', ['{{resolve:secretsmanager:', !Ref Secrets, ':SecretString:appId}}' ]]
         - Name: masterKey
-          Value: !Join ['', ['{{resolve:secretsmanager:', !FindInMap [ !Ref Environment, !Ref Client, secrets ], ':SecretString:masterKey}}' ]]
+          Value: !Join ['', ['{{resolve:secretsmanager:', !Ref Secrets, ':SecretString:masterKey}}' ]]
         - Name: bucketName
-          Value: !Join ['', ['{{resolve:secretsmanager:', !FindInMap [ !Ref Environment, !Ref Client, secrets ], ':SecretString:bucketName}}' ]]
+          Value: !Join ['', ['{{resolve:secretsmanager:', !Ref Secrets, ':SecretString:bucketName}}' ]]
         - Name: clientId
-          Value: !Join ['', ['{{resolve:secretsmanager:', !FindInMap [ !Ref Environment, !Ref Client, secrets ], ':SecretString:clientId}}' ]]
+          Value: !Join ['', ['{{resolve:secretsmanager:', !Ref Secrets, ':SecretString:clientId}}' ]]
         - Name: appName
-          Value: !Join ['', ['{{resolve:secretsmanager:', !FindInMap [ !Ref Environment, !Ref Client, secrets ], ':SecretString:appName}}' ]]
+          Value: !Join ['', ['{{resolve:secretsmanager:', !Ref Secrets, ':SecretString:appName}}' ]]
         - Name: clientDomain
-          Value: !Join ['', ['{{resolve:secretsmanager:', !FindInMap [ !Ref Environment, !Ref Client, secrets ], ':SecretString:clientDomain}}' ]]
+          Value: !Join ['', ['{{resolve:secretsmanager:', !Ref Secrets, ':SecretString:clientDomain}}' ]]
         - Name: portalUrl
-          Value: !Join ['', ['{{resolve:secretsmanager:', !FindInMap [ !Ref Environment, !Ref Client, secrets ], ':SecretString:portalUrl}}' ]]
+          Value: !Join ['', ['{{resolve:secretsmanager:', !Ref Secrets, ':SecretString:portalUrl}}' ]]
         - Name: portalUser
-          Value: !Join ['', ['{{resolve:secretsmanager:', !FindInMap [ !Ref Environment, !Ref Client, secrets ], ':SecretString:portalUser}}' ]]
+          Value: !Join ['', ['{{resolve:secretsmanager:', !Ref Secrets, ':SecretString:portalUser}}' ]]
         - Name: portalPass
-          Value: !Join ['', ['{{resolve:secretsmanager:', !FindInMap [ !Ref Environment, !Ref Client, secrets ], ':SecretString:portalPass}}' ]]
+          Value: !Join ['', ['{{resolve:secretsmanager:', !Ref Secrets, ':SecretString:portalPass}}' ]]
         - Name: appColour
-          Value: !Join ['', ['{{resolve:secretsmanager:', !FindInMap [ !Ref Environment, !Ref Client, secrets ], ':SecretString:appColour}}' ]]
+          Value: !Join ['', ['{{resolve:secretsmanager:', !Ref Secrets, ':SecretString:appColour}}' ]]
         LogConfiguration:
           LogDriver: awslogs
           Options:
@@ -169,7 +143,7 @@ Resources:
     Type: AWS::Route53::RecordSet
     Properties:
       HostedZoneId: Z12GWCNKT39Y1B
-      Name:  !FindInMap [ !Ref Environment, !Ref Client, domainName]
+      Name: !Ref DomainName
       ResourceRecords:
       - Fn::ImportValue: 
           !Join ["", [ ParseServerAlbEndpoint, !Ref Environment ] ]

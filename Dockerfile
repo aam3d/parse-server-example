@@ -1,6 +1,9 @@
 
 FROM alpine:latest
 
+# Get file to start
+ARG file
+
 # Update System
 RUN apk add --update && apk upgrade
 
