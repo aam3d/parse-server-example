@@ -127,6 +127,8 @@ Resources:
           Value: !Join ['', ['{{resolve:secretsmanager:', !Ref Secrets, ':SecretString:portalPass}}' ]]
         - Name: appColour
           Value: !Join ['', ['{{resolve:secretsmanager:', !Ref Secrets, ':SecretString:appColour}}' ]]
+        - Name: DomainName
+          Value: !Ref DomainName
         LogConfiguration:
           LogDriver: awslogs
           Options:
