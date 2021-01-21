@@ -175,9 +175,14 @@ Resources:
   OctionionSecrets:
     Type: AWS::SecretsManager::Secret
     Properties:
-      Name: !Sub aam-secret-octionion-${Client}-${Environment}
-      SecretString: >
-        { "name": "test" }
+      Name: !Sub aam-ssm-secret-octionion-${Client}-${Environment}
+      SecretString: !Sub >
+        {
+          "masterKey": "${MasterKey}",
+          "appId": "${AppId}",
+          "appName": "{{resolve:secretsmanager:${Secrets}:SecretString:appColour}}",
+          "appUrl": "${DomainName}"
+        }
 
 
 
