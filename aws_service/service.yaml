@@ -121,6 +121,8 @@ Resources:
           Value: !Ref MasterKey
         - Name: bucketName
           Value: !Join ['', ['{{resolve:secretsmanager:', !Ref Secrets, ':SecretString:bucketName}}' ]]
+        - Name: bucketRegion
+          Value: !Ref AWS::Region
         - Name: clientId
           Value: !Join ['', ['{{resolve:secretsmanager:', !Ref Secrets, ':SecretString:clientId}}' ]]
         - Name: appName
@@ -135,7 +137,7 @@ Resources:
           Value: !Join ['', ['{{resolve:secretsmanager:', !Ref Secrets, ':SecretString:portalPass}}' ]]
         - Name: appColour
           Value: !Join ['', ['{{resolve:secretsmanager:', !Ref Secrets, ':SecretString:appColour}}' ]]
-        - Name: DomainName
+        - Name: domainName
           Value: !Ref DomainName
         LogConfiguration:
           LogDriver: awslogs

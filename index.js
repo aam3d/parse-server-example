@@ -18,14 +18,20 @@ secrets.bucketName = process.env['bucketName'];
 secrets.bucketRegion = process.env['bucketRegion'];
 
 var config = {
+<<<<<<< HEAD
     port: process.env['privatePort'],
     client: process.env['clientId'],
     domain: process.env['privateDomain'],
+=======
+    port: 1343,
+    client: process.env['clientId']  + '-private',
+    domain: process.env['domainName'],
+>>>>>>> 5d0a57c47dcd702956d30afb45ef0a9b6ac0624d
     appName: process.env['appName']
 };
 
 var baseServerUrl = 'http://localhost:' + config.port + '/' + config.client;
-var publicBaseServerUrl = 'https://' + client.domain + '/' + config.client;
+var publicBaseServerUrl = 'https://' + config.domain + '/' + config.client;
 
 var privateServer = new ParseServer({
     databaseURI: secrets.mongoDatabaseURI,
@@ -82,6 +88,11 @@ app.use('/' + config.client + '/parse', privateServer);
 app.get('/' + config.client + '/hello', function (req, res)
 {
     res.status(200).send("TEST (" + config.client + '):' + Date.now());
+});
+
+app.get('/env', function (req, res)
+{
+    res.status(200).send(JSON.stringify(process.env));
 });
 
 app.use('/' + config.client + '/templates', express.static(path.join(__dirname, '/templates')));
