@@ -39,10 +39,12 @@ Parameters:
   AppId:
     Description: The ID of the application
     Type: String
+    NoEcho: true
 
   MasterKey:
     Description: The master key of the application
     Type: String
+    NoEcho: true
 
 Mappings:
 
