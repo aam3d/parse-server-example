@@ -144,7 +144,7 @@ Resources:
   RecordSet:
     Type: AWS::Route53::RecordSet
     Properties:
-      HostedZoneId: Z12GWCNKT39Y1B
+      HostedZoneId: Z3F4MOJFFOH6OM
       Name: !Ref DomainName
       ResourceRecords:
       - Fn::ImportValue: 
