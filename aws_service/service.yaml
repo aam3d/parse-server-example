@@ -43,6 +43,14 @@ Parameters:
   MasterKey:
     Description: The master key of the application
     Type: String
+
+Mappings:
+
+  SecretsMap:
+    stg:
+      SESSecret: arn:aws:secretsmanager:ap-southeast-2:998914283275:secret:aam-ssm-secret-parse-ses-credentials-stg-K7dnhV
+    prd:
+      SESSecret: xxx
   
 Resources: 
 
@@ -110,9 +118,9 @@ Resources:
           Protocol: tcp
         Environment:
         - Name: sesAPIKey
-          Value: !Join ['', ['{{resolve:secretsmanager:', !Ref Secrets, ':SecretString:sesAPIKey}}' ]]
+          Value: !Join ['', ['{{resolve:secretsmanager:', !FindInMap [ SecretsMap, !Ref Environment, SESSecret], ':SecretString:sesAPIKey}}' ]]
         - Name: sesAPISecret
-          Value: !Join ['', ['{{resolve:secretsmanager:', !Ref Secrets, ':SecretString:sesAPISecret}}' ]]
+          Value: !Join ['', ['{{resolve:secretsmanager:', !FindInMap [ SecretsMap, !Ref Environment, SESSecret], ':SecretString:sesAPISecret}}' ]]
         - Name: mongoDatabaseURI
           Value: !Join ['', ['{{resolve:secretsmanager:', !Ref Secrets, ':SecretString:mongoDatabaseURI}}' ]]
         - Name: appId
