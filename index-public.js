@@ -18,14 +18,14 @@ secrets.bucketName = process.env['bucketName'];
 secrets.bucketRegion = process.env['bucketRegion'];
 
 var config = {
-    port: process.env['publicPort'],
+    port: 1343,
     client: process.env['clientId'] + '-public',
-    domain: process.env['publicDomain'],
+    domain: process.env['domainName'],
     appName: process.env['appName']
 };
 
 var baseServerUrl = 'http://localhost:' + config.port + '/' + config.client;
-var publicBaseServerUrl = 'https://' + client.domain + '/' + config.client;
+var publicBaseServerUrl = 'https://' + config.domain + '/' + config.client;
 
 var publicServer = new ParseServer({
     databaseURI: secrets.mongoDatabaseURI,
@@ -48,24 +48,24 @@ var publicServer = new ParseServer({
     //         amazon: 'https://email.ap-southeast-2.amazonaws.com'
     //     }
     // },
-    // filesAdapter: {
-    //     "module": "parse-server-s3-adapter",
-    //     "options": {
-    //         "bucket": secrets.bucketName,
-    //         // optional:
-    //         "region": secrets.bucketRegion, // default value
-    //         "bucketPrefix": config.client + '/', // default value
-    //         "directAccess": false, // default value
-    //         "fileAcl": null, // default value
-    //         "baseUrl": null, // default value
-    //         "baseUrlDirect": false, // default value
-    //         "signatureVersion": 'v4', // default value
-    //         "globalCacheControl": null, // default value. Or 'public, max-age=86400' for 24 hrs Cache-Control
-    //         "ServerSideEncryption": 'AES256|aws:kms', //AES256 or aws:kms, or if you do not pass this, encryption won't be done
-    //         "validateFilename": null, // Default to parse-server FilesAdapter::validateFilename.
-    //         "generateKey": null // Will default to Parse.FilesController.preserveFileName
-    //     }
-    // },
+    filesAdapter: {
+        "module": "parse-server-s3-adapter",
+        "options": {
+            "bucket": secrets.bucketName,
+            // optional:
+            "region": secrets.bucketRegion, // default value
+            "bucketPrefix": config.client + '/', // default value
+            "directAccess": false, // default value
+            "fileAcl": null, // default value
+            "baseUrl": null, // default value
+            "baseUrlDirect": false, // default value
+            "signatureVersion": 'v4', // default value
+            "globalCacheControl": null, // default value. Or 'public, max-age=86400' for 24 hrs Cache-Control
+            "ServerSideEncryption": 'AES256|aws:kms', //AES256 or aws:kms, or if you do not pass this, encryption won't be done
+            "validateFilename": null, // Default to parse-server FilesAdapter::validateFilename.
+            "generateKey": null // Will default to Parse.FilesController.preserveFileName
+        }
+    },
     customPages: {
         passwordResetSuccess: publicBaseServerUrl + "/templates/password_reset_success.html",
         verifyEmailSuccess: publicBaseServerUrl + "/templates/verify_email_success.html",
