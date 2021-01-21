@@ -180,11 +180,9 @@ Resources:
         {
           "masterKey": "${MasterKey}",
           "appId": "${AppId}",
-          "appName": "{{resolve:secretsmanager:${Secrets}:SecretString:appColour}}",
-          "appUrl": "${DomainName}"
+          "clientId": "${Client}",
+          "appUrl": "https://${DomainName}"
         }
-
-
 
 Outputs:
 
