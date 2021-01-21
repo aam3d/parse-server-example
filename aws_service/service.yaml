@@ -36,6 +36,14 @@ Parameters:
     Description: The load balancer evaluation priority
     Type: String
 
+  AppId:
+    Description: The ID of the application
+    Type: String
+
+  MasterKey:
+    Description: The master key of the application
+    Type: String
+  
 Resources: 
 
   ListenerRule:
@@ -108,9 +116,9 @@ Resources:
         - Name: mongoDatabaseURI
           Value: !Join ['', ['{{resolve:secretsmanager:', !Ref Secrets, ':SecretString:mongoDatabaseURI}}' ]]
         - Name: appId
-          Value: !Join ['', ['{{resolve:secretsmanager:', !Ref Secrets, ':SecretString:appId}}' ]]
+          Value: !Ref AppId
         - Name: masterKey
-          Value: !Join ['', ['{{resolve:secretsmanager:', !Ref Secrets, ':SecretString:masterKey}}' ]]
+          Value: !Ref MasterKey
         - Name: bucketName
           Value: !Join ['', ['{{resolve:secretsmanager:', !Ref Secrets, ':SecretString:bucketName}}' ]]
         - Name: clientId
