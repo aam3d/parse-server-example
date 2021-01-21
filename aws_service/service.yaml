@@ -124,7 +124,7 @@ Resources:
         - Name: bucketRegion
           Value: !Ref AWS::Region
         - Name: clientId
-          Value: !Join ['', ['{{resolve:secretsmanager:', !Ref Secrets, ':SecretString:clientId}}' ]]
+          Value: !Ref Client
         - Name: appName
           Value: !Join ['', ['{{resolve:secretsmanager:', !Ref Secrets, ':SecretString:appName}}' ]]
         - Name: clientDomain
