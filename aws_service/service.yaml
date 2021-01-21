@@ -50,7 +50,7 @@ Mappings:
     stg:
       SESSecret: arn:aws:secretsmanager:ap-southeast-2:998914283275:secret:aam-ssm-secret-parse-ses-credentials-stg-K7dnhV
     prd:
-      SESSecret: xxx
+      SESSecret: arn:aws:secretsmanager:ap-southeast-2:998914283275:secret:aam-ssm-secret-parse-ses-credentials-prd-VPw1kN
   
 Resources: 
 
