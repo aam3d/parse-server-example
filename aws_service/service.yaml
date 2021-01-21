@@ -172,6 +172,15 @@ Resources:
       TTL: 300
       Type: CNAME
 
+  OctionionSecrets:
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Name: !Sub aam-secret-octionion-${Client}-${Environment}
+      SecretString: >
+        { "name": "test" }
+
+
+
 Outputs:
 
   DomainName:
