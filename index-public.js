@@ -18,15 +18,9 @@ secrets.bucketName = process.env['bucketName'];
 secrets.bucketRegion = process.env['bucketRegion'];
 
 var config = {
-<<<<<<< HEAD
-    port: process.env['publicPort'],
-    client: process.env['clientId'],
-    domain: process.env['publicDomain'],
-=======
     port: 1343,
-    client: process.env['clientId'] + '-public',
+    client: process.env['clientId'],
     domain: process.env['domainName'],
->>>>>>> 5d0a57c47dcd702956d30afb45ef0a9b6ac0624d
     appName: process.env['appName']
 };
 
