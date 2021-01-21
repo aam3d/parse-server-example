@@ -41,7 +41,7 @@ Parse.Cloud.define("getToken", async (req) => {
   {
     console.log(ex, ex.stack);
     throw ("exception saving" + ex);
-    return false;
+    // return false;
   }
 });
 
@@ -118,7 +118,7 @@ Parse.Cloud.afterSave(Parse.User, async (request) => {
   }
   else if(user.attributes.email && user.attributes.email.includes(config.clientDomain))
   {
-     console.log(clientName + " USER");
+     console.log(config.client + " USER");
      return addUserToRole(user, config.client);
   }
   else

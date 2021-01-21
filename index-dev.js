@@ -3,7 +3,7 @@
 
 var express = require('express');
 // var ParseServer = require('parse-server').ParseServer;
-var path = require('path');
+// var path = require('path');
 
 var app = express();
 
@@ -17,12 +17,12 @@ var app = express();
 // secrets.bucketName = process.env['bucketName'];
 // secrets.bucketRegion = process.env['bucketRegion'];
 
-// var config = {
-//     port: 1343,
+var config = {
+    port: 1343,
 //     client: process.env['clientId']  + '-private',
 //     domain: process.env['DomainName'],
 //     appName: process.env['appName']
-// };
+};
 
 // var baseServerUrl = 'http://localhost:' + config.port + '/' + config.client;
 // var publicBaseServerUrl = 'https://' + client.domain + '/' + config.client;

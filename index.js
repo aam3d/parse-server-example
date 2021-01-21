@@ -84,11 +84,6 @@ app.get('/' + config.client + '/hello', function (req, res)
     res.status(200).send("TEST (" + config.client + '):' + Date.now());
 });
 
-app.get('/env', function (req, res)
-{
-    res.status(200).send(JSON.stringify(process.env));
-});
-
 app.use('/' + config.client + '/templates', express.static(path.join(__dirname, '/templates')));
 
 app.listen(config.port, function ()
