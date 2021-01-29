@@ -179,10 +179,10 @@ Resources:
       TTL: 300
       Type: CNAME
 
-  OctionionSecrets:
+  OctonionSecrets:
     Type: AWS::SecretsManager::Secret
     Properties:
-      Name: !Sub aam-ssm-secret-octionion-${Client}-${Environment}
+      Name: !Sub aam-ssm-secret-octonion-${Client}-${Environment}
       SecretString: !Sub >
         {
           "masterKey": "${MasterKey}",
