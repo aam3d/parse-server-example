@@ -46,6 +46,11 @@ Parameters:
     Type: String
     NoEcho: true
 
+  JSKey:
+    Description: The js key of the application
+    Type: String
+    NoEcho: true
+
 Mappings:
 
   SecretsMap:
@@ -129,6 +134,8 @@ Resources:
           Value: !Ref AppId
         - Name: masterKey
           Value: !Ref MasterKey
+        - Name: jsKey
+          Value: !Ref JSKey
         - Name: bucketName
           Value: !Join ['', ['{{resolve:secretsmanager:', !Ref Secrets, ':SecretString:bucketName}}' ]]
         - Name: bucketRegion
@@ -179,6 +186,7 @@ Resources:
       SecretString: !Sub >
         {
           "masterKey": "${MasterKey}",
+          "jsKey": "${JSKey}",
           "appId": "${AppId}",
           "clientId": "${Client}",
           "appUrl": "https://${DomainName}"

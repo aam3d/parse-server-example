@@ -14,6 +14,7 @@ secrets.sesAPISecret = process.env['sesAPISecret'];
 secrets.mongoDatabaseURI = process.env['mongoDatabaseURI'];
 secrets.appId = process.env['appId'];
 secrets.masterKey = process.env['masterKey'];
+secrets.jsKey = process.env['jsKey'];
 secrets.bucketName = process.env['bucketName'];
 secrets.bucketRegion = process.env['bucketRegion'];
 
@@ -32,6 +33,7 @@ var privateServer = new ParseServer({
     cloud: 'cloud/main.js',
     appId: secrets.appId,
     masterKey: secrets.masterKey,
+    jsKey: secrets.jsKey,
     serverURL: baseServerUrl + '/parse',
     appName: config.appName,
     publicServerURL: publicBaseServerUrl + '/parse',
