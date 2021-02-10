@@ -86,11 +86,14 @@ Resources:
       Matcher:
         HttpCode: 200-499
       HealthCheckIntervalSeconds: 10
-      HealthCheckPath: /
+      HealthCheckPath: /health
       HealthCheckProtocol: HTTP
       HealthCheckTimeoutSeconds: 5
       HealthyThresholdCount: 2
       UnhealthyThresholdCount: 2
+      TargetGroupAttributes:
+      - Key: stickiness.enabled
+        Value: true
 
   Service:
     Type: AWS::ECS::Service

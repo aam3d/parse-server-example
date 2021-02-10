@@ -19,6 +19,9 @@ ADD . /usr/src/app/
 # Install dependancies
 RUN npm install
 
+# Ensure dependancies are patched
+RUN apk upgrade
+
 # Expose port
 EXPOSE 1343
 
