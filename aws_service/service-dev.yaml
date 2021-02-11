@@ -13,11 +13,9 @@ Parameters:
     Description: The name of the organisation, generally in lowercase
     Type: String
 
-
   OrganisationName:
     Description: The name of the organisation, generally in lowercase
     Type: String
-
 
   OrganisationDomain:
     Description: The name of the organisation, generally in lowercase
@@ -134,16 +132,16 @@ Resources:
       - Type: spread
         Field: instanceId
       LoadBalancers: 
-      - ContainerName: !Sub aam-ecs-service-parse-${Organisation}-${Environment}
+      - ContainerName: !Sub aam-ecs-service-parse-${OrganisationId}-${Environment}
         ContainerPort: 1343
         TargetGroupArn: !Ref TargetGroup
 
   TaskDefinition:
     Type: AWS::ECS::TaskDefinition
     Properties:
-      Family: !Sub aam-ecs-service-parse-${Organisation}-${Environment}
+      Family: !Sub aam-ecs-service-parse-${OrganisationId}-${Environment}
       ContainerDefinitions:
-      - Name: !Sub aam-ecs-service-parse-${Organisation}-${Environment}
+      - Name: !Sub aam-ecs-service-parse-${OrganisationId}-${Environment}
         Image: !Ref DockerImage
         MemoryReservation: 128
         PortMappings:
@@ -226,7 +224,7 @@ Resources:
           "masterKey": "${MasterKey}",
           "jsKey": "${JSKey}",
           "appId": "${AppId}",
-          "organisation": "${Organisation}",
+          "organisation": "${OrganisationId}",
           "appUrl": "https://${DomainName}"
         }
 
