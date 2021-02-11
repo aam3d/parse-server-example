@@ -91,6 +91,11 @@ app.get('/env', function (req, res)
     res.status(200).send(JSON.stringify(process.env));
 });
 
+app.get('/health', function (req, res)
+{
+    res.status(200).send("HEALTHY");
+});
+
 // app.get('/' + config.client + '/hello', function (req, res)
 // {
 //     res.status(200).send("TEST (" + config.client + '):' + Date.now());

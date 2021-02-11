@@ -1,0 +1,239 @@
+Description: > 
+
+  This deploys the service on the infrastrucure based off the required parameters;
+    --- client name
+    --- environment
+
+  If you add new parameters in the secrets manager document, they must be added to the environment within the 
+  task definition below, so that they show up as environment variables.
+
+Parameters:
+
+  OrganisationId:
+    Description: The name of the organisation, generally in lowercase
+    Type: String
+
+
+  OrganisationName:
+    Description: The name of the organisation, generally in lowercase
+    Type: String
+
+
+  OrganisationDomain:
+    Description: The name of the organisation, generally in lowercase
+    Type: String
+
+  Environment:
+    Description: The name of the environment to deploy to
+    AllowedValues: 
+    - dev
+    - stg
+    - prd
+    Type: String
+
+  DockerImage:
+    Description: The docker image to deploy to the cluster
+    Type: String
+
+  DomainName:
+    Description: The domain name of the service
+    Type: String
+
+  MongoServerSecrets:
+    Description: The mongo server secrets to use
+    Type: String
+
+  MongoUserSecrets:
+    Description: The mongo user secrets to use
+    Type: String
+
+  ArcgisServerSecrets:
+    Description: The arcgis server secrets to use
+    Type: String
+
+  ArcgisUserSecrets:
+    Description: The arcgis user secrets to use
+    Type: String
+
+  SESUserSecrets:
+    Description: The ses user secrets to use
+    Type: String
+
+  S3BucketSecrets:
+    Description: The s3 bucket secrets to use
+    Type: String
+
+  Priority:
+    Description: The load balancer evaluation priority
+    Type: String
+
+  AppId:
+    Description: The ID of the application
+    Type: String
+    NoEcho: true
+
+  MasterKey:
+    Description: The master key of the application
+    Type: String
+    NoEcho: true
+
+  JSKey:
+    Description: The js key of the application
+    Type: String
+    NoEcho: true
+  
+Resources: 
+
+  ListenerRule:
+    Type: AWS::ElasticLoadBalancingV2::ListenerRule
+    DependsOn: TargetGroup
+    Properties:
+      Actions:
+      - Type: forward
+        TargetGroupArn: !Ref TargetGroup
+      Conditions:
+      - Field: host-header
+        HostHeaderConfig:
+          Values:
+          - !Ref DomainName
+      ListenerArn: 
+        Fn::ImportValue: !Join ["", [ ParseServerAlbListener, !Ref Environment ] ]
+      Priority: !Ref Priority
+
+  TargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      VpcId: vpc-e92f668e
+      Port: 8080
+      Protocol: HTTP
+      Matcher:
+        HttpCode: 200-499
+      HealthCheckIntervalSeconds: 10
+      HealthCheckPath: /health
+      HealthCheckProtocol: HTTP
+      HealthCheckTimeoutSeconds: 5
+      HealthyThresholdCount: 2
+      UnhealthyThresholdCount: 2
+      TargetGroupAttributes:
+      - Key: stickiness.enabled
+        Value: true
+
+  Service:
+    Type: AWS::ECS::Service
+    DependsOn: ListenerRule
+    Properties: 
+      Cluster: 
+        Fn::ImportValue: !Join ["", [ ECSCluster, !Ref Environment ] ]
+      Role: !Sub arn:aws:iam::${AWS::AccountId}:role/aws-service-role/ecs.amazonaws.com/AWSServiceRoleForECS
+      DesiredCount: 2
+      TaskDefinition: !Ref TaskDefinition
+      DeploymentConfiguration:
+        MaximumPercent: 200
+        MinimumHealthyPercent: 50
+      PlacementStrategies:
+      - Type: spread
+        Field: instanceId
+      LoadBalancers: 
+      - ContainerName: !Sub aam-ecs-service-parse-${Organisation}-${Environment}
+        ContainerPort: 1343
+        TargetGroupArn: !Ref TargetGroup
+
+  TaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: !Sub aam-ecs-service-parse-${Organisation}-${Environment}
+      ContainerDefinitions:
+      - Name: !Sub aam-ecs-service-parse-${Organisation}-${Environment}
+        Image: !Ref DockerImage
+        MemoryReservation: 128
+        PortMappings:
+        - ContainerPort: 1343
+          Protocol: tcp
+        Environment:
+        - Name: sesAPIKey
+          Value: !Join ['', ['{{resolve:secretsmanager:', !Ref SESUserSecrets, ':SecretString:sesAPIKey}}' ]]
+        - Name: sesAPISecret
+          Value: !Join ['', ['{{resolve:secretsmanager:', !Ref SESUserSecrets, ':SecretString:sesAPISecret}}' ]]
+        - Name: mongoDatabaseURL
+          Value: !Join ['', ['{{resolve:secretsmanager:', !Ref MongoServerSecrets, ':SecretString:databaseURL}}' ]]
+        - Name: mongoDatabasePort
+          Value: !Join ['', ['{{resolve:secretsmanager:', !Ref MongoServerSecrets, ':SecretString:databasePort}}' ]]
+        - Name: mongoDatabaseUser
+          Value: !Join ['', ['{{resolve:secretsmanager:', !Ref MongoUserSecrets, ':SecretString:databaseUser}}' ]]
+        - Name: mongoDatabasePassword
+          Value: !Join ['', ['{{resolve:secretsmanager:', !Ref MongoUserSecrets, ':SecretString:databasePass}}' ]]
+        - Name: mongoDatabaseName
+          Value: !Join ['', ['{{resolve:secretsmanager:', !Ref MongoUserSecrets, ':SecretString:databaseName}}' ]]
+        - Name: bucketName
+          Value: !Join ['', ['{{resolve:secretsmanager:', !Ref S3BucketSecrets, ':SecretString:bucketName}}' ]]
+        - Name: portalUrl
+          Value: !Join ['', ['{{resolve:secretsmanager:', !Ref ArcgisServerSecrets, ':SecretString:portalUrl}}' ]]
+        - Name: serverUrl
+          Value: !Join ['', ['{{resolve:secretsmanager:', !Ref ArcgisServerSecrets, ':SecretString:serverUrl}}' ]]
+        - Name: tokenUrl
+          Value: !Join ['', ['{{resolve:secretsmanager:', !Ref ArcgisServerSecrets, ':SecretString:tokenUrl}}' ]]
+        - Name: portalUser
+          Value: !Join ['', ['{{resolve:secretsmanager:', !Ref ArcgisUserSecrets, ':SecretString:portalUser}}' ]]
+        - Name: portalPass
+          Value: !Join ['', ['{{resolve:secretsmanager:', !Ref ArcgisUserSecrets, ':SecretString:portalPass}}' ]]
+        - Name: appId
+          Value: !Ref AppId
+        - Name: masterKey
+          Value: !Ref MasterKey
+        - Name: jsKey
+          Value: !Ref JSKey
+        - Name: bucketName
+          Value: !Join ['', ['{{resolve:secretsmanager:', !Ref S3BucketSecrets, ':SecretString:bucketName}}' ]]
+        - Name: bucketRegion
+          Value: !Ref AWS::Region
+        - Name: organisationId
+          Value: !Ref OrganisationId
+        - Name: organisationName
+          Value: !Ref OrganisationName
+        - Name: organisationDomain
+          Value: !Ref OrganisationDomain
+        - Name: domainName
+          Value: !Ref DomainName
+        LogConfiguration:
+          LogDriver: awslogs
+          Options:
+            awslogs-group: !Ref AWS::StackName
+            awslogs-region: !Ref AWS::Region
+
+  CloudWatchLogsGroup:
+    Type: AWS::Logs::LogGroup
+    Properties: 
+      LogGroupName: !Ref AWS::StackName
+      RetentionInDays: 7 
+
+  RecordSet:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneId: Z3F4MOJFFOH6OM
+      Name: !Ref DomainName
+      ResourceRecords:
+      - Fn::ImportValue: 
+          !Join ["", [ ParseServerAlbEndpoint, !Ref Environment ] ]
+      TTL: 300
+      Type: CNAME
+
+  OctonionSecrets:
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Name: !Sub aam-ssm-secret-octonion-${Organisation}-${Environment}
+      SecretString: !Sub >
+        {
+          "masterKey": "${MasterKey}",
+          "jsKey": "${JSKey}",
+          "appId": "${AppId}",
+          "organisation": "${Organisation}",
+          "appUrl": "https://${DomainName}"
+        }
+
+Outputs:
+
+  DomainName:
+    Value: !Ref DomainName
+
+  DockerImage:
+    Value: !Ref DockerImage
