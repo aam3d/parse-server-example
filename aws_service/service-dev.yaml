@@ -180,8 +180,6 @@ Resources:
           Value: !Ref MasterKey
         - Name: jsKey
           Value: !Ref JSKey
-        - Name: bucketName
-          Value: !Join ['', ['{{resolve:secretsmanager:', !Ref S3BucketSecrets, ':SecretString:bucketName}}' ]]
         - Name: bucketRegion
           Value: !Ref AWS::Region
         - Name: organisationId
