@@ -10,7 +10,7 @@ Description: >
 Parameters:
 
   OrganisationId:
-    Description: The name of the organisation, generally in lowercase
+    Description: The id of the organisation, generally in lowercase
     Type: String
 
   OrganisationName:
@@ -18,13 +18,12 @@ Parameters:
     Type: String
 
   OrganisationDomain:
-    Description: The name of the organisation, generally in lowercase
+    Description: The domain of the organisation, generally in lowercase
     Type: String
 
   Environment:
     Description: The name of the environment to deploy to
     AllowedValues: 
-    - dev
     - stg
     - prd
     Type: String
@@ -164,6 +163,8 @@ Resources:
           Value: !Join ['', ['{{resolve:secretsmanager:', !Ref MongoUserSecrets, ':SecretString:databaseName}}' ]]
         - Name: bucketName
           Value: !Join ['', ['{{resolve:secretsmanager:', !Ref S3BucketSecrets, ':SecretString:bucketName}}' ]]
+        - Name: bucketRegion
+          Value: !Ref AWS::Region
         - Name: portalUrl
           Value: !Join ['', ['{{resolve:secretsmanager:', !Ref ArcgisServerSecrets, ':SecretString:portalUrl}}' ]]
         - Name: serverUrl
@@ -180,8 +181,6 @@ Resources:
           Value: !Ref MasterKey
         - Name: jsKey
           Value: !Ref JSKey
-        - Name: bucketRegion
-          Value: !Ref AWS::Region
         - Name: organisationId
           Value: !Ref OrganisationId
         - Name: organisationName
