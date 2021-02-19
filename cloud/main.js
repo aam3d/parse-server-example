@@ -119,7 +119,9 @@ Parse.Cloud.afterSave(Parse.User, async (request) => {
   else if(user.attributes.email && user.attributes.email.includes(config.organisationDomain))
   {
      console.log(config.organisationId + " USER");
-     return addUserToRole(user, config.organisationId);
+     var addToOrgPromise = addUserToRole(user, config.organisationId);
+     var addToMemberPromise = addUserToRole(user, "Member");
+     return Promise.all([addToOrgPromise,addToMemberPromise]);
   }
   else
   {

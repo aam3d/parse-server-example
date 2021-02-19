@@ -43,6 +43,7 @@ var privateServer = new ParseServer({
     publicServerURL: publicBaseServerUrl + '/parse',
     verifyUserEmails: true,
     preventLoginWithUnverifiedEmail: true,
+    allowClassCreation: false,
     // caseInsensitive: false,
     emailAdapter: {
         module: 'parse-server-simple-ses-adapter-with-template',

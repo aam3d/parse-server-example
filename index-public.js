@@ -41,6 +41,7 @@ var publicServer = new ParseServer({
     serverURL: baseServerUrl + '/parse',
     appName: config.organisationName,
     publicServerURL: publicBaseServerUrl + '/parse',
+    allowClassCreation: false,
     // verifyUserEmails: true,
     // preventLoginWithUnverifiedEmail: true,
     // caseInsensitive: false,
