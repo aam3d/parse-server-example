@@ -225,7 +225,7 @@ Resources:
           "masterKey": "${MasterKey}",
           "jsKey": "${JSKey}",
           "appId": "${AppId}",
-          "appName": "${OrganisationName}",
+          "appName": "${ServiceName}",
           "organisation": "${OrganisationId}",
           "appUrl": "https://${DomainName}",
           "serverURL": "https://${DomainName}/${OrganisationId}/parse",
