@@ -219,7 +219,7 @@ Resources:
   OctonionSecrets:
     Type: AWS::SecretsManager::Secret
     Properties:
-      Name: !Sub aam-ssm-secret-octonion-${OrganisationId}-${Environment}
+      Name: !Sub aam-ssm-secret-octonion-${ServiceName}-${Environment}
       SecretString: !Sub >
         {
           "masterKey": "${MasterKey}",
@@ -227,7 +227,7 @@ Resources:
           "appId": "${AppId}",
           "appName": "${OrganisationName}",
           "organisation": "${OrganisationId}",
-          "appUrl": "https://${DomainName}"
+          "appUrl": "https://${DomainName}",
           "serverUrl": "https://${DomainName}/${OrganisationId}/parse",
           "production": false
         }
