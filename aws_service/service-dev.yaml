@@ -21,6 +21,10 @@ Parameters:
     Description: The domain of the organisation, generally in lowercase
     Type: String
 
+  ServiceName:
+    Description: The name of the organisation with public or private
+    Type: String
+
   Environment:
     Description: The name of the environment to deploy to
     AllowedValues: 
@@ -131,16 +135,16 @@ Resources:
       - Type: spread
         Field: instanceId
       LoadBalancers: 
-      - ContainerName: !Sub aam-ecs-service-parse-${OrganisationId}-${Environment}
+      - ContainerName: !Sub aam-ecs-service-parse-${ServiceName}-${Environment}
         ContainerPort: 1343
         TargetGroupArn: !Ref TargetGroup
 
   TaskDefinition:
     Type: AWS::ECS::TaskDefinition
     Properties:
-      Family: !Sub aam-ecs-service-parse-${OrganisationId}-${Environment}
+      Family: !Sub aam-ecs-service-parse-${ServiceName}-${Environment}
       ContainerDefinitions:
-      - Name: !Sub aam-ecs-service-parse-${OrganisationId}-${Environment}
+      - Name: !Sub aam-ecs-service-parse-${ServiceName}-${Environment}
         Image: !Ref DockerImage
         MemoryReservation: 128
         PortMappings:
@@ -221,8 +225,11 @@ Resources:
           "masterKey": "${MasterKey}",
           "jsKey": "${JSKey}",
           "appId": "${AppId}",
+          "appName": "${OrganisationName}",
           "organisation": "${OrganisationId}",
           "appUrl": "https://${DomainName}"
+          "serverUrl": "https://${DomainName}/${OrganisationId}/parse",
+          "production": false
         }
 
 Outputs:
