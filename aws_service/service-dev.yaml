@@ -228,7 +228,7 @@ Resources:
           "appName": "${OrganisationName}",
           "organisation": "${OrganisationId}",
           "appUrl": "https://${DomainName}",
-          "serverUrl": "https://${DomainName}/${OrganisationId}/parse",
+          "serverURL": "https://${DomainName}/${OrganisationId}/parse",
           "production": false
         }
 
