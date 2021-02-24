@@ -5,6 +5,10 @@ var express = require('express');
 var ParseServer = require('parse-server').ParseServer;
 var path = require('path');
 
+var MigratingAdapter = require('parse-server-migrating-adapter')
+var GridStoreAdapter = require('parse-server/lib/Adapters/Files/GridStoreAdapter').GridStoreAdapter
+var S3Adapter = require('parse-server-s3-adapter')
+
 var app = express();
 
 var config = {};
@@ -32,6 +36,24 @@ config.domainName = process.env['domainName'];
 var baseServerUrl = 'http://localhost:' + config.port + '/' + config.organisationId;
 var publicBaseServerUrl = 'https://' + config.domainName + '/' + config.organisationId;
 
+var s3Adapter = new S3Adapter({
+    "bucket": config.bucketName,
+    // optional:
+    "region": config.bucketRegion, // default value
+    "bucketPrefix": config.organisationId + '/', // default value
+    "directAccess": false, // default value
+    "fileAcl": null, // default value
+    "baseUrl": null, // default value
+    "baseUrlDirect": false, // default value
+    "signatureVersion": 'v4', // default value
+    "globalCacheControl": null, // default value. Or 'public, max-age=86400' for 24 hrs Cache-Control
+    "ServerSideEncryption": 'AES256|aws:kms', //AES256 or aws:kms, or if you do not pass this, encryption won't be done
+    "validateFilename": null, // Default to parse-server FilesAdapter::validateFilename.
+    "generateKey": null // Will default to Parse.FilesController.preserveFileName
+});
+
+var fileAdapter = new MigratingAdapter(s3Adapter, [new GridStoreAdapter(mongoDatabaseURI)])
+
 var privateServer = new ParseServer({
     databaseURI: config.mongoDatabaseURI,
     cloud: 'cloud/main.js',
@@ -55,24 +77,7 @@ var privateServer = new ParseServer({
             amazon: 'https://email.ap-southeast-2.amazonaws.com'
         }
     },
-    filesAdapter: {
-        "module": "parse-server-s3-adapter",
-        "options": {
-            "bucket": config.bucketName,
-            // optional:
-            "region": config.bucketRegion, // default value
-            "bucketPrefix": config.organisationId + '/', // default value
-            "directAccess": false, // default value
-            "fileAcl": null, // default value
-            "baseUrl": null, // default value
-            "baseUrlDirect": false, // default value
-            "signatureVersion": 'v4', // default value
-            "globalCacheControl": null, // default value. Or 'public, max-age=86400' for 24 hrs Cache-Control
-            "ServerSideEncryption": 'AES256|aws:kms', //AES256 or aws:kms, or if you do not pass this, encryption won't be done
-            "validateFilename": null, // Default to parse-server FilesAdapter::validateFilename.
-            "generateKey": null // Will default to Parse.FilesController.preserveFileName
-        }
-    },
+    filesAdapter: fileAdapter,
     customPages: {
         passwordResetSuccess: publicBaseServerUrl + "/templates/password_reset_success.html",
         verifyEmailSuccess: publicBaseServerUrl + "/templates/verify_email_success.html",
