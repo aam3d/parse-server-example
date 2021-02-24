@@ -12,8 +12,8 @@
     "express": "~4.17.x",
     "parse": "~1.8.0",
     "parse-server": "github:aam3d/parse-server#aam-4.3.0-built",
+    "parse-server-migrating-adapter": "^1.0.0",
     "parse-server-s3-adapter": "github:aam3d/parse-server-s3-adapter",
-    "parse-server-migrating-adapter": "github:aam3d/parse-server-migrating-adapter",
     "parse-server-simple-ses-adapter-with-template": "github:aam3d/parse-server-simple-ses-adapter#template"
   },
   "scripts": {
