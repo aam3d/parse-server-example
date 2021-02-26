@@ -63,7 +63,7 @@ Parameters:
 
   Priority:
     Description: The load balancer evaluation priority
-    Type: String
+    Type: Number
 
   AppId:
     Description: The ID of the application
