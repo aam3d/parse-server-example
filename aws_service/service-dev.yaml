@@ -167,6 +167,8 @@ Resources:
           Value: !Join ['', ['{{resolve:secretsmanager:', !Ref MongoUserSecrets, ':SecretString:databaseName}}' ]]
         - Name: bucketName
           Value: !Join ['', ['{{resolve:secretsmanager:', !Ref S3BucketSecrets, ':SecretString:bucketName}}' ]]
+        - Name: bucketBaseUrl
+          Value: !Join ['', ['{{resolve:secretsmanager:', !Ref S3BucketSecrets, ':SecretString:bucketBaseUrl}}' ]]
         - Name: bucketRegion
           Value: !Ref AWS::Region
         - Name: portalUrl

@@ -23,6 +23,8 @@ config.masterKey = process.env['masterKey'];
 config.jsKey = process.env['jsKey'];
 config.bucketName = process.env['bucketName'];
 config.bucketRegion = process.env['bucketRegion'];
+config.bucketBaseUrl = process.env['bucketBaseUrl'] || false;
+config.bucketDirectAccess = (config.bucketBaseUrl != false);
 config.port = 1343;
 config.organisationId = process.env['organisationId'];
 config.organisationName = process.env['organisationName'];
@@ -62,9 +64,9 @@ var privateServer = new ParseServer({
             // optional:
             "region": config.bucketRegion, // default value
             "bucketPrefix": config.organisationId + '/', // default value
-            "directAccess": false, // default value
+            "directAccess": config.bucketDirectAccess, // default value
             "fileAcl": null, // default value
-            "baseUrl": null, // default value
+            "baseUrl": config.bucketBaseUrl, // default value
             "baseUrlDirect": false, // default value
             "signatureVersion": 'v4', // default value
             "globalCacheControl": null, // default value. Or 'public, max-age=86400' for 24 hrs Cache-Control
