@@ -3,13 +3,13 @@
 const config = {
   username: process.env['portalUser'],
   password: process.env['portalPass'],
-  url: process.env['portalUrl'],
-  appName: process.env['appName'],
-  client: process.env['clientId'],
-  clientDomain: process.env['clientDomain']
+  url: process.env['tokenUrl'],
+  organisationName: process.env['organisationName'],
+  organisationId: process.env['organisationId'],
+  organisationDomain: process.env['organisationDomain']
 };
 
-console.log("CLOUD CODE " + config.appName + " Load...");
+console.log("CLOUD CODE " + config.organisationName + " Load...");
 
 // Parse.Cloud.define("initSchema", async (req) => {
 //   var 
@@ -62,7 +62,7 @@ Parse.Cloud.define("gltfUsageById", async (req) => {
         if (item.attributes.gltfId == req.params.id)
         {
           var publicRead = design.attributes.ACL.getPublicReadAccess();
-          var roleRead = design.attributes.ACL.getRoleReadAccess(config.client);
+          var roleRead = design.attributes.ACL.getRoleReadAccess(config.organisationId);
           usedInDesigns.push({ id: design.id, title: design.attributes.name, creator: design.attributes.creator, public: publicRead, role: roleRead });
           break;
         }
@@ -99,7 +99,7 @@ Parse.Cloud.define("designUsageById", async (req) => {
     if(option.attributes.designId == req.params.id)
     {
       var publicRead = option.attributes.ACL.getPublicReadAccess();
-      var roleRead = option.attributes.ACL.getRoleReadAccess(config.client);
+      var roleRead = option.attributes.ACL.getRoleReadAccess(config.organisationId);
       usedInOptions.push({ id: option.id, title: option.attributes.title, creator: option.attributes.creator, public: publicRead, role: roleRead });
     }
   }
@@ -116,10 +116,12 @@ Parse.Cloud.afterSave(Parse.User, async (request) => {
     console.log("ANONYMOUS USER");
     return addUserToRole(user, "Guest");
   }
-  else if(user.attributes.email && user.attributes.email.includes(config.clientDomain))
+  else if(user.attributes.email && user.attributes.email.includes(config.organisationDomain))
   {
-     console.log(config.client + " USER");
-     return addUserToRole(user, config.client);
+     console.log(config.organisationId + " USER");
+     var addToOrgPromise = addUserToRole(user, config.organisationId);
+     var addToMemberPromise = addUserToRole(user, "Member");
+     return Promise.all([addToOrgPromise,addToMemberPromise]);
   }
   else
   {
@@ -171,4 +173,4 @@ function addUserToRole(user, roleName) {
     });
 }
 
-console.log("CLOUD CODE " + config.appName + " Loaded");
+console.log("CLOUD CODE " + config.organisationName + " Loaded");
