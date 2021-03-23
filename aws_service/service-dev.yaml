@@ -10,7 +10,7 @@ Description: >
 Parameters:
 
   OrganisationId:
-    Description: The name of the organisation, generally in lowercase
+    Description: The id of the organisation, generally in lowercase
     Type: String
 
   OrganisationName:
@@ -18,13 +18,16 @@ Parameters:
     Type: String
 
   OrganisationDomain:
-    Description: The name of the organisation, generally in lowercase
+    Description: The domain of the organisation, generally in lowercase
+    Type: String
+
+  ServiceName:
+    Description: The name of the organisation with public or private
     Type: String
 
   Environment:
     Description: The name of the environment to deploy to
     AllowedValues: 
-    - dev
     - stg
     - prd
     Type: String
@@ -63,7 +66,7 @@ Parameters:
 
   Priority:
     Description: The load balancer evaluation priority
-    Type: String
+    Type: Number
 
   AppId:
     Description: The ID of the application
@@ -132,16 +135,16 @@ Resources:
       - Type: spread
         Field: instanceId
       LoadBalancers: 
-      - ContainerName: !Sub aam-ecs-service-parse-${OrganisationId}-${Environment}
+      - ContainerName: !Sub aam-ecs-service-parse-${ServiceName}-${Environment}
         ContainerPort: 1343
         TargetGroupArn: !Ref TargetGroup
 
   TaskDefinition:
     Type: AWS::ECS::TaskDefinition
     Properties:
-      Family: !Sub aam-ecs-service-parse-${OrganisationId}-${Environment}
+      Family: !Sub aam-ecs-service-parse-${ServiceName}-${Environment}
       ContainerDefinitions:
-      - Name: !Sub aam-ecs-service-parse-${OrganisationId}-${Environment}
+      - Name: !Sub aam-ecs-service-parse-${ServiceName}-${Environment}
         Image: !Ref DockerImage
         MemoryReservation: 128
         PortMappings:
@@ -164,6 +167,10 @@ Resources:
           Value: !Join ['', ['{{resolve:secretsmanager:', !Ref MongoUserSecrets, ':SecretString:databaseName}}' ]]
         - Name: bucketName
           Value: !Join ['', ['{{resolve:secretsmanager:', !Ref S3BucketSecrets, ':SecretString:bucketName}}' ]]
+        - Name: bucketBaseUrl
+          Value: !Join ['', ['{{resolve:secretsmanager:', !Ref S3BucketSecrets, ':SecretString:bucketBaseUrl}}' ]]
+        - Name: bucketRegion
+          Value: !Ref AWS::Region
         - Name: portalUrl
           Value: !Join ['', ['{{resolve:secretsmanager:', !Ref ArcgisServerSecrets, ':SecretString:portalUrl}}' ]]
         - Name: serverUrl
@@ -180,8 +187,6 @@ Resources:
           Value: !Ref MasterKey
         - Name: jsKey
           Value: !Ref JSKey
-        - Name: bucketRegion
-          Value: !Ref AWS::Region
         - Name: organisationId
           Value: !Ref OrganisationId
         - Name: organisationName
@@ -216,14 +221,17 @@ Resources:
   OctonionSecrets:
     Type: AWS::SecretsManager::Secret
     Properties:
-      Name: !Sub aam-ssm-secret-octonion-${OrganisationId}-${Environment}
+      Name: !Sub aam-ssm-secret-octonion-${ServiceName}-${Environment}
       SecretString: !Sub >
         {
           "masterKey": "${MasterKey}",
           "jsKey": "${JSKey}",
           "appId": "${AppId}",
+          "appName": "${ServiceName}",
           "organisation": "${OrganisationId}",
-          "appUrl": "https://${DomainName}"
+          "appUrl": "https://${DomainName}",
+          "serverURL": "https://${DomainName}/${OrganisationId}/parse",
+          "production": false
         }
 
 Outputs:

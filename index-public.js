@@ -7,36 +7,41 @@ var path = require('path');
 
 var app = express();
 
-var secrets = {};
+var config = {};
 
-secrets.sesAPIKey = process.env['sesAPIKey'];
-secrets.sesAPISecret = process.env['sesAPISecret'];
-secrets.mongoDatabaseURI = process.env['mongoDatabaseURI'];
-secrets.appId = process.env['appId'];
-secrets.masterKey = process.env['masterKey'];
-secrets.jsKey = process.env['jsKey'];
-secrets.bucketName = process.env['bucketName'];
-secrets.bucketRegion = process.env['bucketRegion'];
+config.sesAPIKey = process.env['sesAPIKey'];
+config.sesAPISecret = process.env['sesAPISecret'];
+var mongoURL = process.env['mongoDatabaseURL'];
+var mongoPort = process.env['mongoDatabasePort'];
+var mongoUser = process.env['mongoDatabaseUser'];
+var mongoPass = process.env['mongoDatabasePassword'];
+var mongoDatabase = process.env['mongoDatabaseName'];
+var mongoDatabaseURI = 'mongodb://' + mongoUser + ":" + mongoPass + '@' + mongoURL + ":" + mongoPort + '/' + mongoDatabase;
+config.mongoDatabaseURI = mongoDatabaseURI
+config.appId = process.env['appId'];
+config.masterKey = process.env['masterKey'];
+config.jsKey = process.env['jsKey'];
+config.bucketName = process.env['bucketName'];
+config.bucketRegion = process.env['bucketRegion'];
+config.port = 1343;
+config.organisationId = process.env['organisationId'];
+config.organisationName = process.env['organisationName'];
+config.organisationDomain = process.env['organisationDomain'];
+config.domainName = process.env['domainName'];
 
-var config = {
-    port: 1343,
-    client: process.env['clientId'],
-    domain: process.env['domainName'],
-    appName: process.env['appName']
-};
-
-var baseServerUrl = 'http://localhost:' + config.port + '/' + config.client;
-var publicBaseServerUrl = 'https://' + config.domain + '/' + config.client;
+var baseServerUrl = 'http://localhost:' + config.port + '/' + config.organisationId;
+var publicBaseServerUrl = 'https://' + config.domainName + '/' + config.organisationId;
 
 var publicServer = new ParseServer({
-    databaseURI: secrets.mongoDatabaseURI,
+    databaseURI: config.mongoDatabaseURI,
     cloud: 'cloud/main.js',
-    appId: secrets.appId,
-    masterKey: secrets.masterKey,
-    jsKey: secrets.jsKey,
+    appId: config.appId,
+    masterKey: config.masterKey,
+    jsKey: config.jsKey,
     serverURL: baseServerUrl + '/parse',
-    appName: config.appName,
+    appName: config.organisationName,
     publicServerURL: publicBaseServerUrl + '/parse',
+    allowClassCreation: false,
     // verifyUserEmails: true,
     // preventLoginWithUnverifiedEmail: true,
     // caseInsensitive: false,
@@ -44,8 +49,8 @@ var publicServer = new ParseServer({
     //     module: 'parse-server-simple-ses-adapter-with-template',
     //     options: {
     //         fromAddress: 'no-reply@geocirrus.com',
-    //         apiKey: secrets.sesAPIKey,
-    //         apiSecret: secrets.sesAPISecret,
+    //         apiKey: config.sesAPIKey,
+    //         apiSecret: config.sesAPISecret,
     //         domain: 'geocirrus.com',
     //         amazon: 'https://email.ap-southeast-2.amazonaws.com'
     //     }
@@ -53,10 +58,10 @@ var publicServer = new ParseServer({
     filesAdapter: {
         "module": "parse-server-s3-adapter",
         "options": {
-            "bucket": secrets.bucketName,
+            "bucket": config.bucketName,
             // optional:
-            "region": secrets.bucketRegion, // default value
-            "bucketPrefix": config.client + '/', // default value
+            "region": config.bucketRegion, // default value
+            "bucketPrefix": config.organisationId + '/', // default value
             "directAccess": false, // default value
             "fileAcl": null, // default value
             "baseUrl": null, // default value
@@ -79,11 +84,11 @@ var publicServer = new ParseServer({
         // parseFrameURL: "./templates/parseFrameURL",
     }
 });
-app.use('/' + config.client + '/parse', publicServer);
+app.use('/' + config.organisationId + '/parse', publicServer);
 
-app.get('/' + config.client + '/hello', function (req, res)
+app.get('/' + config.organisationId + '/hello', function (req, res)
 {
-    res.status(200).send("TEST (" + config.client + '):' + Date.now());
+    res.status(200).send("TEST (" + config.organisationId + '):' + Date.now());
 });
 
 app.get('/health', function (req, res)
@@ -91,9 +96,9 @@ app.get('/health', function (req, res)
     res.status(200).send("HEALTHY");
 });
 
-app.use('/' + config.client + '/templates', express.static(path.join(__dirname, '/templates')));
+app.use('/' + config.organisationId + '/templates', express.static(path.join(__dirname, '/templates')));
 
 app.listen(config.port, function ()
 {
-    console.log('parse-server (' + config.client + ') running on port ' + config.port);
+    console.log('parse-server (' + config.organisationId + ') running on port ' + config.port);
 });
