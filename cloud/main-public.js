@@ -123,7 +123,6 @@ Parse.Cloud.beforeSave(Parse.User, async (request) => {
   else
   {
     console.log("beforeSave: OTHER");
-    throw(new Error("You are not authorised to sign up"));
   }
 });
 
@@ -139,7 +138,7 @@ Parse.Cloud.afterSave(Parse.User, async (request) => {
   else if(user.attributes.email && (user.attributes.email.includes(config.organisationDomain) || user.attributes.email.includes("@aamgroup.com")))
   {
     console.log("afterSave: " + user.attributes.email);
-    throw(new Error("You'ren't authorised to sign up"));
+    throw(new Error("You are not authorised"));
 
     //  var addToOrgPromise = addUserToRole(user, config.organisationId);
     //  var addToMemberPromise = addUserToRole(user, "Member");
@@ -148,7 +147,7 @@ Parse.Cloud.afterSave(Parse.User, async (request) => {
   else
   {
     console.log("afterSave: OTHER");
-    throw(new Error("You are not authorised to sign up"));
+    throw(new Error("You are not authorised other"));
     return false;
   }
 });
