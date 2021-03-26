@@ -128,6 +128,7 @@ Parse.Cloud.beforeSave(Parse.User, async (request) => {
   else
   {
     console.log("beforeSave: OTHER");
+    throw(new Error("You are not authorised to sign up"));
   }
 });
 
