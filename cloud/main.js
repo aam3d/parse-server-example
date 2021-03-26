@@ -119,7 +119,11 @@ Parse.Cloud.beforeSave(Parse.User, async (request) => {
   else if(user.attributes.email && (user.attributes.email.includes(config.organisationDomain) || user.attributes.email.includes("@aamgroup.com")))
   {
     console.log("beforeSave: " + user.attributes.email);
-    if(user.attributes.email != user.attributes.username)
+    if(user.attributes.email.includes("@aamgroup.com"))
+    {
+      console.log("beforeSave: aam approved");
+    }
+    else if(user.attributes.email != user.attributes.username)
     {
       console.log("beforeSave: user/email mismatch");
       throw(new Error("You'ren't authorised to sign up"));
