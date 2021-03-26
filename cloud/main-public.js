@@ -9,7 +9,7 @@ const config = {
   organisationDomain: process.env['organisationDomain']
 };
 
-console.log("CLOUD CODE " + config.organisationName + " Load...");
+console.log("CLOUD CODE " + config.organisationName + " Public Load...");
 
 // Parse.Cloud.define("initSchema", async (req) => {
 //   var 
@@ -113,7 +113,7 @@ Parse.Cloud.beforeSave(Parse.User, async (request) => {
   // console.log("afterSave", JSON.stringify(user.attributes, null, 2));
   if(user.attributes.authData && user.attributes.authData.anonymous)
   {
-    console.log("beforeSave: anon");
+    console.log("beforeSave: guest");
   }
   else if(user.attributes.email && (user.attributes.email.includes(config.organisationDomain) || user.attributes.email.includes("@aamgroup.com")))
   {
@@ -147,8 +147,6 @@ Parse.Cloud.afterSave(Parse.User, async (request) => {
   else
   {
     console.log("afterSave: OTHER");
-    throw(new Error("You are not authorised other"));
-    return false;
   }
 });
 

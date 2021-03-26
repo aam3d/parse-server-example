@@ -9,7 +9,7 @@ const config = {
   organisationDomain: process.env['organisationDomain']
 };
 
-console.log("CLOUD CODE " + config.organisationName + " Load...");
+console.log("CLOUD CODE " + config.organisationName + " Private Load...");
 
 // Parse.Cloud.define("initSchema", async (req) => {
 //   var 
@@ -128,7 +128,6 @@ Parse.Cloud.beforeSave(Parse.User, async (request) => {
   else
   {
     console.log("beforeSave: OTHER");
-    throw(new Error("You are not authorised to sign up"));
   }
 });
 
@@ -152,8 +151,6 @@ Parse.Cloud.afterSave(Parse.User, async (request) => {
   else
   {
     console.log("afterSave: OTHER");
-    throw(new Error("You are not authorised other"));
-    return false;
   }
 });
 
