@@ -107,31 +107,52 @@ Parse.Cloud.define("designUsageById", async (req) => {
   return (usedInOptions);
 });
 
+Parse.Cloud.beforeSave(Parse.User, async (request) => {
+  var user = request.object;
+
+  // console.log("afterSave", JSON.stringify(user.attributes, null, 2));
+  if(user.attributes.authData && user.attributes.authData.anonymous)
+  {
+
+  }
+  else if(user.attributes.email && (user.attributes.email.includes(config.organisationDomain) || user.attributes.email.includes("@aamgroup.com")))
+  {
+    if(user.attributes.email != user.attributes.username)
+    {
+      throw(new Error("Email/username mismatch"));
+    }
+  }
+  else
+  {
+    throw(new Error("Email domain not valid"));
+  }
+});
+
 Parse.Cloud.afterSave(Parse.User, async (request) => {
   var user = request.object;
 
-  console.log("afterSave", JSON.stringify(user.attributes, null, 2));
+  // console.log("afterSave", JSON.stringify(user.attributes, null, 2));
   if(user.attributes.authData && user.attributes.authData.anonymous)
   {
-    console.log("ANONYMOUS USER");
+    // console.log("ANONYMOUS USER");
     return addUserToRole(user, "Guest");
   }
-  else if(user.attributes.email && user.attributes.email.includes(config.organisationDomain))
+  else if(user.attributes.email && (user.attributes.email.includes(config.organisationDomain) || user.attributes.email.includes("@aamgroup.com")))
   {
-     console.log(config.organisationId + " USER");
+    //  console.log(config.organisationId + " USER");
      var addToOrgPromise = addUserToRole(user, config.organisationId);
      var addToMemberPromise = addUserToRole(user, "Member");
      return Promise.all([addToOrgPromise,addToMemberPromise]);
   }
   else
   {
-    console.log("OTHER USER");
+    // console.log("OTHER USER");
     return false;
   }
 });
 
 function addUserToRole(user, roleName) {
-    console.log("ADD USER TO ROLE");
+    // console.log("ADD USER TO ROLE");
     var query = new Parse.Query(Parse.Role);
     query.contains("name", roleName);
     return query.find({ useMasterKey: true }).then((roles) =>
