@@ -34,7 +34,7 @@ var publicBaseServerUrl = 'https://' + config.domainName + '/' + config.organisa
 
 var publicServer = new ParseServer({
     databaseURI: config.mongoDatabaseURI,
-    cloud: 'cloud/main.js',
+    cloud: 'cloud/main-public.js',
     appId: config.appId,
     masterKey: config.masterKey,
     jsKey: config.jsKey,

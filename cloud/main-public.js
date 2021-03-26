@@ -113,17 +113,12 @@ Parse.Cloud.beforeSave(Parse.User, async (request) => {
   // console.log("afterSave", JSON.stringify(user.attributes, null, 2));
   if(user.attributes.authData && user.attributes.authData.anonymous)
   {
-    console.log("beforeSave: guest");
-    throw(new Error("You'ren't authorised to sign up"));
+    console.log("beforeSave: anon");
   }
   else if(user.attributes.email && (user.attributes.email.includes(config.organisationDomain) || user.attributes.email.includes("@aamgroup.com")))
   {
     console.log("beforeSave: " + user.attributes.email);
-    if(user.attributes.email != user.attributes.username)
-    {
-      console.log("beforeSave: user/email mismatch");
-      throw(new Error("You'ren't authorised to sign up"));
-    }
+    throw(new Error("You are not authorised to sign up"));
   }
   else
   {
@@ -139,20 +134,21 @@ Parse.Cloud.afterSave(Parse.User, async (request) => {
   if(user.attributes.authData && user.attributes.authData.anonymous)
   {
     console.log("afterSave: guest");
-    throw(new Error("You are not authorised guest"));
+    return addUserToRole(user, "Guest");
   }
   else if(user.attributes.email && (user.attributes.email.includes(config.organisationDomain) || user.attributes.email.includes("@aamgroup.com")))
   {
     console.log("afterSave: " + user.attributes.email);
-    //  console.log(config.organisationId + " USER");
-     var addToOrgPromise = addUserToRole(user, config.organisationId);
-     var addToMemberPromise = addUserToRole(user, "Member");
-     return Promise.all([addToOrgPromise,addToMemberPromise]);
+    throw(new Error("You'ren't authorised to sign up"));
+
+    //  var addToOrgPromise = addUserToRole(user, config.organisationId);
+    //  var addToMemberPromise = addUserToRole(user, "Member");
+    //  return Promise.all([addToOrgPromise,addToMemberPromise]);
   }
   else
   {
     console.log("afterSave: OTHER");
-    throw(new Error("You are not authorised other"));
+    throw(new Error("You are not authorised to sign up"));
     return false;
   }
 });
