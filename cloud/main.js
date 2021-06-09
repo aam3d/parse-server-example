@@ -116,18 +116,10 @@ Parse.Cloud.beforeSave(Parse.User, async (request) => {
     console.log("beforeSave: guest");
     throw(new Error("You'ren't authorised to sign up"));
   }
-  else if(user.attributes.email && (user.attributes.email.includes(config.organisationDomain) || user.attributes.email.includes("@aamgroup.com")))
+  else if(user.attributes.email != user.attributes.username)
   {
-    console.log("beforeSave: " + user.attributes.email);
-    if(user.attributes.email.includes("@aamgroup.com"))
-    {
-      console.log("beforeSave: aam approved");
-    }
-    else if(user.attributes.email != user.attributes.username)
-    {
-      console.log("beforeSave: user/email mismatch");
-      throw(new Error("You'ren't authorised to sign up"));
-    }
+    console.log("beforeSave: user/email mismatch");
+    throw(new Error("You'ren't authorised to sign up"));
   }
   else
   {
