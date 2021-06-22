@@ -13,7 +13,7 @@
     "parse": "~1.8.0",
     "parse-server": "github:aam3d/parse-server#aam-4.3.0-built",
     "parse-server-s3-adapter": "github:aam3d/parse-server-s3-adapter",
-    "parse-server-simple-ses-adapter-with-template": "github:aam3d/parse-server-simple-ses-adapter#template"
+    "parse-server-simple-ses-adapter-with-template": "github:aam3d/parse-server-simple-ses-adapter#marketing2021"
   },
   "scripts": {
     "start": "node index.js",
