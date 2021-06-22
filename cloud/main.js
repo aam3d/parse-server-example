@@ -148,6 +148,7 @@ Parse.Cloud.afterSave(Parse.User, async (request) => {
   else
   {
     console.log("afterSave: OTHER");
+    return addUserToRole(user, "Guest");
   }
 });
 
