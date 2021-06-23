@@ -18,7 +18,7 @@ console.log("CLOUD CODE " + config.organisationName + " Public Load...");
 Parse.Cloud.define("getToken", async (req) => {
   try
   {
-    let expiration = "1440";
+    let expiration = "180"; // 3 Hours
     let response = await Parse.Cloud.httpRequest({
       method: 'POST',
       headers: {
