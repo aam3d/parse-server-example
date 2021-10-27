@@ -18,10 +18,10 @@ package_docker()
 
     # Tag
     docker tag "ecr-repo-parse-server-${environment}:latest" \
-        "998914283275.dkr.ecr.ap-southeast-2.amazonaws.com/ecr-repo-parse-server-${environment}:latest"
+        "631376976434.dkr.ecr.ap-southeast-2.amazonaws.com/ecr-repo-parse-server-${environment}:latest"
 
     # Push
-    docker push "998914283275.dkr.ecr.ap-southeast-2.amazonaws.com/ecr-repo-parse-server-${environment}:latest"
+    docker push "631376976434.dkr.ecr.ap-southeast-2.amazonaws.com/ecr-repo-parse-server-${environment}:latest"
 
 }
 
