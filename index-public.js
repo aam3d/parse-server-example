@@ -88,7 +88,7 @@ app.use('/' + config.organisationId + '/parse', publicServer);
 
 app.get('/' + config.organisationId + '/hello', function (req, res)
 {
-    res.status(200).send("TEST (" + config.organisationId + '):' + Date.now());
+    res.status(200).send("Hello," + config.organisationId + '! ' + Date.now());
 });
 
 app.get('/health', function (req, res)

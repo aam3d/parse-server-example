@@ -45,6 +45,7 @@ var privateServer = new ParseServer({
     publicServerURL: publicBaseServerUrl + '/parse',
     verifyUserEmails: true,
     preventLoginWithUnverifiedEmail: true,
+    emailVerifyTokenValidityDuration: 7 * 24 * 60 * 60, // 7 days
     allowClassCreation: false,
     // caseInsensitive: false,
     emailAdapter: {
@@ -90,7 +91,7 @@ app.use('/' + config.organisationId + '/parse', privateServer);
 
 app.get('/' + config.organisationId + '/hello', function (req, res)
 {
-    res.status(200).send("TEST (" + config.organisationId + '):' + Date.now());
+    res.status(200).send("Hello," + config.organisationId + '! ' + Date.now());
 });
 
 app.get('/health', function (req, res)
