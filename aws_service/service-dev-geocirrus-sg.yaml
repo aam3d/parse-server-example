@@ -104,7 +104,7 @@ Resources:
   TargetGroup:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
     Properties:
-      VpcId: vpc-0f4410a849a48769d
+      VpcId: vpc-0ff0d8bc91d1a8780
       Port: 8080
       Protocol: HTTP
       Matcher:
@@ -210,7 +210,7 @@ Resources:
   RecordSet:
     Type: AWS::Route53::RecordSet
     Properties:
-      HostedZoneId: Z086783638Z8DHMN3VCBO
+      HostedZoneId: Z0195775311L6D94F55UI
       Name: !Ref DomainName
       ResourceRecords:
       - Fn::ImportValue: 
