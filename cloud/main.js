@@ -22,7 +22,7 @@ Parse.Cloud.define("getDownload", async (req) => {
   var client = new S3Client({ region: 'ap-southeast-2'});
   var getObjectParams = {
     Bucket: "aam-geocirrus-transfer",
-    Key: "mn-pilot/" + req.params.id + ".las"
+    Key: "mn-pilot/" + fileId + ".las"
   };
   const command = new GetObjectCommand(getObjectParams);
   const url = await getSignedUrl(client, command, {
@@ -32,6 +32,13 @@ Parse.Cloud.define("getDownload", async (req) => {
   return url;
 },
 {
+  fields: {
+    fileId: {
+      type: 'String',
+      required: true,
+      error: "Download ID is required"
+    }
+  },
   requireUser: true,
   requireUserKeys: {
     emailVerified: {
@@ -71,6 +78,13 @@ Parse.Cloud.define("getToken", async (req) => {
   }
 },
 {
+  fields: {
+    referer: {
+      type: 'String',
+      required: true,
+      error: "referer is required"
+    }
+  },
   requireUser: true,
   requireUserKeys: {
     emailVerified: {
