@@ -34,7 +34,7 @@ Parse.Cloud.define("getDownload", async (req) => {
 {
   fields: {
     fileId: {
-      type: 'String',
+      type: String,
       required: true,
       error: "Download ID is required"
     }
@@ -80,7 +80,7 @@ Parse.Cloud.define("getToken", async (req) => {
 {
   fields: {
     referer: {
-      type: 'String',
+      type: String,
       required: true,
       error: "referer is required"
     }
