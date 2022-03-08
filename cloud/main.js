@@ -1,4 +1,7 @@
-// const logger = require('parse-server').logger; 
+// const logger = require('parse-server').logger; '
+
+const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
+const { S3Client, GetObjectCommand } = require("@aws-sdk/client-s3");
 
 const config = {
   username: process.env['portalUser'],
@@ -14,6 +17,29 @@ console.log("CLOUD CODE " + config.organisationName + " Private Load...");
 // Parse.Cloud.define("initSchema", async (req) => {
 //   var 
 // });
+Parse.Cloud.define("getDownload", async (req) => {
+  var fileId = req.params.fileId;
+  var client = new S3Client({ region: 'ap-southeast-2'});
+  var getObjectParams = {
+    Bucket: "aam-geocirrus-transfer",
+    Key: "mn-pilot/" + req.params.id + ".las"
+  };
+  const command = new GetObjectCommand(getObjectParams);
+  const url = await getSignedUrl(client, command, {
+    // expiresIn: 3600 // 1 Hour
+    expiresIn: 43200 // 12 Hours
+   });
+  return url;
+},
+{
+  requireUser: true,
+  requireUserKeys: {
+    emailVerified: {
+      options: true,
+      error: "Only verified users can download files"
+    }
+  }
+});
 
 Parse.Cloud.define("getToken", async (req) => {
   try
@@ -43,6 +69,15 @@ Parse.Cloud.define("getToken", async (req) => {
     throw ("exception saving" + ex);
     // return false;
   }
+},
+{
+  requireUser: true,
+  requireUserKeys: {
+    emailVerified: {
+      options: true,
+      error: "Only verified users can get a token"
+    }
+  }
 });
 
 Parse.Cloud.define("gltfUsageById", async (req) => {
@@ -70,6 +105,9 @@ Parse.Cloud.define("gltfUsageById", async (req) => {
     }
   }
   return (usedInDesigns);
+},
+{
+  requireUser: true
 });
 
 Parse.Cloud.define("designUsageById", async (req) => {
@@ -105,6 +143,9 @@ Parse.Cloud.define("designUsageById", async (req) => {
   }
 
   return (usedInOptions);
+},
+{
+  requireUser: true
 });
 
 Parse.Cloud.beforeSave(Parse.User, async (request) => {
