@@ -2,6 +2,7 @@
 
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 const { S3Client, GetObjectCommand } = require("@aws-sdk/client-s3");
+const { SESClient, SendEmailCommand } = require("@aws-sdk/client-ses");
 
 const config = {
   username: process.env['portalUser'],
@@ -17,6 +18,134 @@ console.log("CLOUD CODE " + config.organisationName + " Private Load...");
 // Parse.Cloud.define("initSchema", async (req) => {
 //   var 
 // });
+
+function parseTemplate(data, template) {
+  const { user, appName } = data;
+  return new Promise((resolve, reject) => {
+      fs.readFile(
+          path.join(__dirname, template),
+          "utf-8",
+          (error, buffer) => {
+              if (error) {
+                  reject(error);
+              } else {
+                  const template = hbs.compile(buffer);
+                  resolve(template(data));
+              }
+          }
+      );
+  });
+}
+
+function sendDownloadMail(data) {
+  // Set the parameters
+  const params = {
+      Destination: {
+          /* required */
+          CcAddresses: [
+              /* more items */
+          ],
+          ToAddresses: [
+              data.to, //RECEIVER_ADDRESS
+              /* more To-email addresses */
+          ],
+      },
+      Message: {
+          /* required */
+          Body: {
+              /* required */
+              Html: {
+                  Charset: "UTF-8",
+                  Data: data.html,
+              },
+              Text: {
+                  Charset: "UTF-8",
+                  Data: data.text,
+              },
+          },
+          Subject: {
+              Charset: "UTF-8",
+              Data: data.subject,
+          },
+      },
+      Source: data.from, // SENDER_ADDRESS
+      ReplyToAddresses: [
+          /* more items */
+      ],
+  };
+
+  var sesClient = new SESClient({region: "ap-southeast-2"});
+  var sendCommand = new SendEmailCommand(params);
+  return sesClient.send(sendCommand);
+}
+
+Parse.Cloud.define("getDownloadEmail", async (req) => {
+  var fileIds = req.params.fileIds;
+  var client = new S3Client({ region: 'ap-southeast-2'});
+  
+  var downloads = [];
+  await Promise.all(fileIds.map( async (fileId) =>
+  {
+    var getObjectParams = {
+      Bucket: "aam-geocirrus-transfer",
+      Key: "mn-pilot/" + fileId + ".las"
+    };
+    const command = new GetObjectCommand(getObjectParams);
+    const url = await getSignedUrl(client, command, {
+      // expiresIn: 3600 // 1 Hour
+      expiresIn: 43200 // 12 Hours
+    });
+
+    downloads.push({
+      title: fileId,
+      url: url
+    });
+  }));
+
+  var createEmailData = {
+    user: {
+        username: req.user.attributes.email,
+        email: req.user.attributes.username
+    },
+    appName: config.organisationName,
+    downloads: downloads
+  }
+
+  var parseTxtPromise = parseTemplate(createEmailData, "text-template.txt");
+  var parseHtmlPromise = parseTemplate(createEmailData, "email-template.html");
+  
+  var data  = await Promise.all([parseTxtPromise, parseHtmlPromise])
+  
+  var mailData = {
+      text: data[0],
+      html: data[1],
+      // to: user.get("email") || user.get("username"),
+      to: createEmailData.user.email,
+      from: "no-reply@geocirrus.com",
+      subject: "Download links " + createEmailData.appName,
+  };
+  var sendResult = await sendDownloadMail(mailData);
+  console.log(sendResult);
+        
+  return downloads;
+},
+{
+  fields: {
+    fileId: {
+      type: Array,
+      required: true,
+      error: "Download ID is required"
+    }
+  },
+  requireUser: true,
+  requireUserKeys: {
+    emailVerified: {
+      options: true,
+      error: "Only verified users can download files"
+    }
+  }
+});
+
 Parse.Cloud.define("getDownload", async (req) => {
   var fileId = req.params.fileId;
   var client = new S3Client({ region: 'ap-southeast-2'});

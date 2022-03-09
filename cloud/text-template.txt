@@ -1,0 +1,16 @@
+{{#if downloads}}
+Your downloads are ready from {{appName}}
+
+Once downloaded you can not download this information again. If you need access to this information again please copy it to a secure location.
+
+{{#each downloads}}
+    - {{title}}
+      {{url}}
+
+{{/each}}
+Didn't download with us? Please ignore this email.
+
+{{appName}}
+{{else}}
+No downloads found!
+{{/if}}

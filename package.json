@@ -10,8 +10,10 @@
   "license": "MIT",
   "dependencies": {
     "@aws-sdk/client-s3": "^3.53.1",
+    "@aws-sdk/client-ses": "^3.53.0",
     "@aws-sdk/s3-request-presigner": "^3.53.1",
     "express": "~4.17.x",
+    "handlebars": "^4.7.7",
     "parse": "~1.8.0",
     "parse-server": "github:aam3d/parse-server#aam-4.10.4-built",
     "parse-server-s3-adapter": "github:aam3d/parse-server-s3-adapter",
