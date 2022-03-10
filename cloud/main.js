@@ -132,7 +132,10 @@ Parse.Cloud.define("getDownloadEmail", async (req) => {
 {
   fields: {
     fileIds: {
-      type: Array,
+      type: Object,
+      options: val => {
+        return val.length > 0 && val.length < 12;
+      },
       required: true,
       error: "Download ID is required"
     }
