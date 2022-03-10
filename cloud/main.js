@@ -1,5 +1,8 @@
 // const logger = require('parse-server').logger; '
 
+const fs = require('fs');
+const path = require('path');
+const hbs = require('handlebars');
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 const { S3Client, GetObjectCommand } = require("@aws-sdk/client-s3");
 const { SESClient, SendEmailCommand } = require("@aws-sdk/client-ses");
