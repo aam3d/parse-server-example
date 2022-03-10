@@ -131,7 +131,7 @@ Parse.Cloud.define("getDownloadEmail", async (req) => {
 },
 {
   fields: {
-    fileId: {
+    fileIds: {
       type: Array,
       required: true,
       error: "Download ID is required"
