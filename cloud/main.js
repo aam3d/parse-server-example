@@ -91,7 +91,7 @@ Parse.Cloud.define("getDownloadEmail", async (req) => {
   {
     var getObjectParams = {
       Bucket: "aam-geocirrus-transfer",
-      Key: "mn-pilot/" + fileId + ".las"
+      Key: "mn-pilot/las/" + fileId + ".las"
     };
     const command = new GetObjectCommand(getObjectParams);
     const url = await getSignedUrl(client, command, {
@@ -100,6 +100,7 @@ Parse.Cloud.define("getDownloadEmail", async (req) => {
     });
 
     downloads.push({
+      type: "las",
       title: fileId,
       url: url
     });
@@ -130,7 +131,7 @@ Parse.Cloud.define("getDownloadEmail", async (req) => {
   var sendResult = await sendDownloadMail(mailData);
   console.log(sendResult);
         
-  return downloads;
+  return true;
 },
 {
   fields: {
