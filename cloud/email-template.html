@@ -202,12 +202,67 @@
     <h3>
         Once downloaded you can not download this information again. If you need access to this information again please copy it to a secure location.
     </h3>
-    <ul>
-    {{#each downloads}}
+    <!-- {{#each downloads}}
         <li>
             <a href="{{url}}">{{title}}</a>
         </li>
+    {{/each}} -->
+    
+    {{#if las_downloads}}
+    Point Cloud (LAS):-
+    <ul>
+    {{#each las_downloads}}
+    <li>
+        <a download="{{title}}_pnt.las" href="{{url}}">{{title}}_pnt.las</a>
+    </li>
     {{/each}}
+    </ul>
+    {{/if}}
+
+    {{#if dtm_downloads}}
+    Terrain (TIFF):-
+    <ul>
+    {{#each dtm_downloads}}
+    <li>
+        <a download="{{title}}_dtm.tif" href="{{url}}">{{title}}_dtm.tif</a>
+    </li>
+    {{/each}}
+    </ul>
+    {{/if}}
+
+    {{#if contour_downloads}}
+    Contours (SHP):-
+    <ul>
+    {{#each contour_downloads}}
+    <li>
+        <a download="{{title}}_con.zip" href="{{url}}">{{title}}_con.zip</a>
+    </li>
+    {{/each}}
+    </ul>
+    {{/if}}
+
+    {{#if intensity_downloads}}
+    Intensity (TIFF):-
+    <ul>
+    {{#each intensity_downloads}}
+    <li>
+        <a download="{{title}}_int.tif" href="{{url}}">{{title}}_int.tif</a>
+    </li>
+    {{/each}}
+    </ul>
+    {{/if}}
+
+    {{#if hillshade_downloads}}
+    Hillshade (TIFF):-
+    <ul>
+    {{#each hillshade_downloads}}
+    <li>
+        <a download="{{title}}_hls.tif" href="{{url}}">{{title}}_hls.tif</a>
+    </li>
+    {{/each}}
+    </ul>
+    {{/if}}
+
     </ul>
 {{else}}
     <h3>No downloads found!</h3>
