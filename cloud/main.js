@@ -89,8 +89,16 @@ Parse.Cloud.define("getDownloadEmail", async (req) => {
   var lasEnabled = true;
   var intensityEnabled = true;
   var dtmEnabled = true;
-  var hillshadeEnabled = false;
+  // var hillshadeEnabled = false;
   var contoursEnabled = false;
+  var metadataEnabled = false;
+
+  req.params.desiredTypes.includes("las") ? lasEnabled = true : lasEnabled = false;
+  req.params.desiredTypes.includes("intensity") ? intensityEnabled = true : intensityEnabled = false;
+  req.params.desiredTypes.includes("dtm") ? dtmEnabled = true : dtmEnabled = false;
+  // req.params.desiredTypes.includes("hillshade") ? hillshadeEnabled = true : hillshadeEnabled = false;
+  req.params.desiredTypes.includes("contours") ? contoursEnabled = true : contoursEnabled = false;
+  req.params.desiredTypes.includes("metadata") ? metadataEnabled = true : metadataEnabled = false;
 
   var downloads = [];
 
@@ -99,7 +107,7 @@ Parse.Cloud.define("getDownloadEmail", async (req) => {
     await Promise.all(fileIds.map(async (fileId) => {
       var getObjectParams = {
         Bucket: "aam-geocirrus-transfer",
-        Key: "mn-pilot/las/" + fileId + ".las"
+        Key: "mn-pilot/las/" + fileId + "_las.zip"
       };
       const command = new GetObjectCommand(getObjectParams);
       const url = await getSignedUrl(client, command, {
@@ -122,7 +130,7 @@ Parse.Cloud.define("getDownloadEmail", async (req) => {
     await Promise.all(fileIds.map(async (fileId) => {
       var getObjectParams = {
         Bucket: "aam-geocirrus-transfer",
-        Key: "mn-pilot/intensity_imagery/" + fileId + ".tif"
+        Key: "mn-pilot/intensity_imagery/" + fileId + "_int.zip"
       };
       const command = new GetObjectCommand(getObjectParams);
       const url = await getSignedUrl(client, command, {
@@ -141,31 +149,31 @@ Parse.Cloud.define("getDownloadEmail", async (req) => {
     }));
   }
 
-  var hillshade_downloads = [];
-  if (hillshadeEnabled) {
+  // var hillshade_downloads = [];
+  // if (hillshadeEnabled) {
 
-    await Promise.all(fileIds.map(async (fileId) => {
-      var getObjectParams = {
-        Bucket: "aam-geocirrus-transfer",
-        Key: "mn-pilot/las/" + fileId + ".las"
-      };
-      const command = new GetObjectCommand(getObjectParams);
-      const url = await getSignedUrl(client, command, {
-        // expiresIn: 3600 // 1 Hour
-        expiresIn: 43200 // 12 Hours
-      });
+  //   await Promise.all(fileIds.map(async (fileId) => {
+  //     var getObjectParams = {
+  //       Bucket: "aam-geocirrus-transfer",
+  //       Key: "mn-pilot/hillshade/" + fileId + "_hls.zip"
+  //     };
+  //     const command = new GetObjectCommand(getObjectParams);
+  //     const url = await getSignedUrl(client, command, {
+  //       // expiresIn: 3600 // 1 Hour
+  //       expiresIn: 43200 // 12 Hours
+  //     });
 
       
 
-      var download = {
-        type: "hillshade",
-        title: fileId,
-        url: url
-      };
-      downloads.push(download);
-      hillshade_downloads.push(download)
-    }));
-  }
+  //     var download = {
+  //       type: "hillshade",
+  //       title: fileId,
+  //       url: url
+  //     };
+  //     downloads.push(download);
+  //     hillshade_downloads.push(download)
+  //   }));
+  // }
 
   var dtm_downloads = [];
   if (dtmEnabled) {
@@ -173,7 +181,7 @@ Parse.Cloud.define("getDownloadEmail", async (req) => {
     await Promise.all(fileIds.map(async (fileId) => {
       var getObjectParams = {
         Bucket: "aam-geocirrus-transfer",
-        Key: "mn-pilot/be_rasters/" + fileId + ".tif"
+        Key: "mn-pilot/be_rasters/" + fileId + "_dtm.zip"
       };
       const command = new GetObjectCommand(getObjectParams);
       const url = await getSignedUrl(client, command, {
@@ -191,12 +199,36 @@ Parse.Cloud.define("getDownloadEmail", async (req) => {
     }));
   }
 
+
+  var metadata_downloads = [];
+  if (metadataEnabled) {
+
+    await Promise.all(fileIds.map(async (fileId) => {
+      var getObjectParams = {
+        Bucket: "aam-geocirrus-transfer",
+        Key: "mn-pilot/metadata/" + fileId + "_meta.zip"
+      };
+      const command = new GetObjectCommand(getObjectParams);
+      const url = await getSignedUrl(client, command, {
+        // expiresIn: 3600 // 1 Hour
+        expiresIn: 43200 // 12 Hours
+      });
+
+      var download = {
+        type: "metadata",
+        title: fileId,
+        url: url
+      };
+      downloads.push(download);
+      metadata_downloads.push(download);
+    }));
+  }
   var contour_downloads = [];
   if (contoursEnabled) {
     await Promise.all(fileIds.map(async (fileId) => {
       var getObjectParams = {
         Bucket: "aam-geocirrus-transfer",
-        Key: "mn-pilot/contours/" + fileId + ".shp"
+        Key: "mn-pilot/contours/" + fileId + "_cnt.zip"
       };
       const command = new GetObjectCommand(getObjectParams);
       const url = await getSignedUrl(client, command, {
@@ -223,9 +255,10 @@ Parse.Cloud.define("getDownloadEmail", async (req) => {
     downloads: downloads,
     las_downloads: las_downloads,
     dtm_downloads: dtm_downloads,
-    contour_downloads: contour_downloads,
+    // contour_downloads: contour_downloads,
     intensity_downloads: intensity_downloads,
     hillshade_downloads: hillshade_downloads,
+    metadata_downloads: metadata_downloads,
   }
 
   var parseTxtPromise = parseTemplate(createEmailData, "text-template.txt");
@@ -255,6 +288,14 @@ Parse.Cloud.define("getDownloadEmail", async (req) => {
         },
         required: true,
         error: "Download ID is required"
+      },
+      desiredTypes: {
+        type: Object,
+        options: val => {
+          return val.length > 0;
+        },
+        required: true,
+        error: "Types list is required"
       }
     },
     requireUser: true,
