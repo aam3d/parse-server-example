@@ -48,6 +48,15 @@ Hillshade (TIFF):-
 {{/each}}
 {{/if}}
 
+{{#if metadata_downloads}}
+metadata (TIFF):-
+{{#each metadata_downloads}}
+    - {{title}}
+      {{url}}
+
+{{/each}}
+{{/if}}
+
 {{appName}}
 {{else}}
 No downloads found!

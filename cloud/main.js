@@ -255,9 +255,9 @@ Parse.Cloud.define("getDownloadEmail", async (req) => {
     downloads: downloads,
     las_downloads: las_downloads,
     dtm_downloads: dtm_downloads,
-    // contour_downloads: contour_downloads,
+    contour_downloads: contour_downloads,
     intensity_downloads: intensity_downloads,
-    hillshade_downloads: hillshade_downloads,
+    // hillshade_downloads: hillshade_downloads,
     metadata_downloads: metadata_downloads,
   }
 
