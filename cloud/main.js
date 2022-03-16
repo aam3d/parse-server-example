@@ -107,7 +107,7 @@ Parse.Cloud.define("getDownloadEmail", async (req) => {
     await Promise.all(fileIds.map(async (fileId) => {
       var getObjectParams = {
         Bucket: "aam-geocirrus-transfer",
-        Key: "mn-pilot/las/" + fileId + "_las.zip"
+        Key: config.appId + "/las/" + fileId + "_las.zip"
       };
       const command = new GetObjectCommand(getObjectParams);
       const url = await getSignedUrl(client, command, {
@@ -130,7 +130,7 @@ Parse.Cloud.define("getDownloadEmail", async (req) => {
     await Promise.all(fileIds.map(async (fileId) => {
       var getObjectParams = {
         Bucket: "aam-geocirrus-transfer",
-        Key: "mn-pilot/intensity_imagery/" + fileId + "_int.zip"
+        Key: config.appId + "/intensity_imagery/" + fileId + "_int.zip"
       };
       const command = new GetObjectCommand(getObjectParams);
       const url = await getSignedUrl(client, command, {
@@ -155,7 +155,7 @@ Parse.Cloud.define("getDownloadEmail", async (req) => {
   //   await Promise.all(fileIds.map(async (fileId) => {
   //     var getObjectParams = {
   //       Bucket: "aam-geocirrus-transfer",
-  //       Key: "mn-pilot/hillshade/" + fileId + "_hls.zip"
+  //       Key: config.appId + "/hillshade/" + fileId + "_hls.zip"
   //     };
   //     const command = new GetObjectCommand(getObjectParams);
   //     const url = await getSignedUrl(client, command, {
@@ -181,7 +181,7 @@ Parse.Cloud.define("getDownloadEmail", async (req) => {
     await Promise.all(fileIds.map(async (fileId) => {
       var getObjectParams = {
         Bucket: "aam-geocirrus-transfer",
-        Key: "mn-pilot/be_rasters/" + fileId + "_dtm.zip"
+        Key: config.appId + "/be_rasters/" + fileId + "_dtm.zip"
       };
       const command = new GetObjectCommand(getObjectParams);
       const url = await getSignedUrl(client, command, {
@@ -206,7 +206,7 @@ Parse.Cloud.define("getDownloadEmail", async (req) => {
     await Promise.all(fileIds.map(async (fileId) => {
       var getObjectParams = {
         Bucket: "aam-geocirrus-transfer",
-        Key: "mn-pilot/metadata/" + fileId + "_meta.zip"
+        Key: config.appId + "/metadata/" + fileId + "_meta.zip"
       };
       const command = new GetObjectCommand(getObjectParams);
       const url = await getSignedUrl(client, command, {
@@ -228,7 +228,7 @@ Parse.Cloud.define("getDownloadEmail", async (req) => {
     await Promise.all(fileIds.map(async (fileId) => {
       var getObjectParams = {
         Bucket: "aam-geocirrus-transfer",
-        Key: "mn-pilot/contours/" + fileId + "_cnt.zip"
+        Key: config.appId + "/contours/" + fileId + "_cnt.zip"
       };
       const command = new GetObjectCommand(getObjectParams);
       const url = await getSignedUrl(client, command, {
@@ -312,7 +312,7 @@ Parse.Cloud.define("getDownload", async (req) => {
   var client = new S3Client({ region: 'ap-southeast-2' });
   var getObjectParams = {
     Bucket: "aam-geocirrus-transfer",
-    Key: "mn-pilot/" + fileId + ".las"
+    Key: config.appId + "/" + fileId + ".las"
   };
   const command = new GetObjectCommand(getObjectParams);
   const url = await getSignedUrl(client, command, {
