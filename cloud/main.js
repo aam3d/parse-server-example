@@ -450,9 +450,9 @@ Parse.Cloud.beforeSave(Parse.User, async (request) => {
     console.log("beforeSave: guest");
     throw (new Error("You'ren't authorised to sign up"));
   }
-  else if (user.attributes.email && (user.attributes.email.includes(config.organisationDomain) || user.attributes.email.includes("@aamgroup.com"))) {
+  else if (user.attributes.email && (user.attributes.email.includes(config.organisationDomain) || user.attributes.email.includes("@aamgroup.com") || user.attributes.email.includes("@woolpert.com"))) {
     console.log("beforeSave: " + user.attributes.email);
-    if (user.attributes.email.includes("@aamgroup.com")) {
+    if (user.attributes.email.includes("@aamgroup.com") || user.attributes.email.includes("@woolpert.com")) {
       console.log("beforeSave: aam approved");
     }
     else if (user.attributes.email != user.attributes.username) {
@@ -474,7 +474,7 @@ Parse.Cloud.afterSave(Parse.User, async (request) => {
     console.log("afterSave: guest");
     throw (new Error("You are not authorised guest"));
   }
-  else if (user.attributes.email && (user.attributes.email.includes(config.organisationDomain) || user.attributes.email.includes("@aamgroup.com"))) {
+  else if (user.attributes.email && (user.attributes.email.includes(config.organisationDomain) || user.attributes.email.includes("@aamgroup.com") || user.attributes.email.includes("@woolpert.com"))) {
     console.log("afterSave: " + user.attributes.email);
     //  console.log(config.organisationId + " USER");
     var addToOrgPromise = addUserToRole(user, config.organisationId);
