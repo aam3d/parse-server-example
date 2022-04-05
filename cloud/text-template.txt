@@ -1,0 +1,65 @@
+{{#if downloads}}
+Your downloads are ready from {{appName}}
+
+Once downloaded you can not download this information again. If you need access to this information again please copy it to a secure location.
+
+{{#if las_downloads}}
+Point Cloud (LAS):-
+{{#each las_downloads}}
+    - {{title}}
+      {{url}}
+
+{{/each}}
+{{/if}}
+
+{{#if dtm_downloads}}
+Terrain (TIFF):-
+{{#each dtm_downloads}}
+    - {{title}}
+      {{url}}
+
+{{/each}}
+{{/if}}
+
+{{#if contour_downloads}}
+Contours (SHP):-
+{{#each contour_downloads}}
+    - {{title}}
+      {{url}}
+
+{{/each}}
+{{/if}}
+
+{{#if intensity_downloads}}
+Intensity (TIFF):-
+{{#each intensity_downloads}}
+    - {{title}}
+      {{url}}
+
+{{/each}}
+{{/if}}
+
+{{#if hillshade_downloads}}
+Hillshade (TIFF):-
+{{#each hillshade_downloads}}
+    - {{title}}
+      {{url}}
+
+{{/each}}
+{{/if}}
+
+{{#if metadata_downloads}}
+metadata (TIFF):-
+{{#each metadata_downloads}}
+    - {{title}}
+      {{url}}
+
+{{/each}}
+{{/if}}
+
+{{appName}}
+{{else}}
+No downloads found!
+{{/if}}
+
+Didn't download with us? Please ignore this email.
