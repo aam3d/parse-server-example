@@ -13,7 +13,8 @@ const config = {
   url: process.env['tokenUrl'],
   organisationName: process.env['organisationName'],
   organisationId: process.env['organisationId'],
-  organisationDomain: process.env['organisationDomain']
+  organisationDomain: process.env['organisationDomain'],
+  additionalDomains: process.env['additionalDomains']
 };
 
 console.log("CLOUD CODE " + config.organisationName + " Private Load...");
@@ -442,6 +443,30 @@ Parse.Cloud.define("designUsageById", async (req) => {
     requireUser: true
   });
 
+function validateEmail(email) {
+  var isValidEmail =  (email.includes(config.organisationDomain) || email.includes("@aamgroup.com") || email.includes("@woolpert.com"))
+  if(!isValidEmail)
+  {
+    if(config.additionalDomains && config.additionalDomains.length > 0)
+    {
+      domainList = config.additionalDomains.split();
+      for(var i=0;i<domainList.length;i++)
+      {
+        var checkDomain = domainList[i];
+        if(email.includes(checkDomain))
+        {
+          isValidEmail = true;
+          break;
+        }
+      }
+    }
+  }
+  return isValidEmail;
+}
+function validateInternalEmail(email) {
+  return (email.includes("@aamgroup.com") || email.includes("@woolpert.com"))
+}
+
 Parse.Cloud.beforeSave(Parse.User, async (request) => {
   var user = request.object;
 
@@ -450,9 +475,9 @@ Parse.Cloud.beforeSave(Parse.User, async (request) => {
     console.log("beforeSave: guest");
     throw (new Error("You'ren't authorised to sign up"));
   }
-  else if (user.attributes.email && (user.attributes.email.includes(config.organisationDomain) || user.attributes.email.includes("@aamgroup.com") || user.attributes.email.includes("@woolpert.com"))) {
+  else if (user.attributes.email && validateEmail(user.attributes.email)) {
     console.log("beforeSave: " + user.attributes.email);
-    if (user.attributes.email.includes("@aamgroup.com") || user.attributes.email.includes("@woolpert.com")) {
+    if (validateInternalEmail(user.attributes.email)) {
       console.log("beforeSave: aam approved");
     }
     else if (user.attributes.email != user.attributes.username) {
@@ -474,7 +499,7 @@ Parse.Cloud.afterSave(Parse.User, async (request) => {
     console.log("afterSave: guest");
     throw (new Error("You are not authorised guest"));
   }
-  else if (user.attributes.email && (user.attributes.email.includes(config.organisationDomain) || user.attributes.email.includes("@aamgroup.com") || user.attributes.email.includes("@woolpert.com"))) {
+  else if (user.attributes.email && validateEmail(user.attributes.email)) {
     console.log("afterSave: " + user.attributes.email);
     //  console.log(config.organisationId + " USER");
     var addToOrgPromise = addUserToRole(user, config.organisationId);

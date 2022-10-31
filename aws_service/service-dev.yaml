@@ -21,6 +21,10 @@ Parameters:
     Description: The domain of the organisation, generally in lowercase
     Type: String
 
+  AdditionalDomains:
+    Description: additional domains that are allowed to sign up
+    Type: String
+
   ServiceName:
     Description: The name of the organisation with public or private
     Type: String
@@ -193,6 +197,8 @@ Resources:
           Value: !Ref OrganisationName
         - Name: organisationDomain
           Value: !Ref OrganisationDomain
+        - Name: additionalDomains
+          Value: !Ref AdditionalDomains
         - Name: domainName
           Value: !Ref DomainName
         LogConfiguration:

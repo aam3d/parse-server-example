@@ -6,7 +6,8 @@ const config = {
   url: process.env['tokenUrl'],
   organisationName: process.env['organisationName'],
   organisationId: process.env['organisationId'],
-  organisationDomain: process.env['organisationDomain']
+  organisationDomain: process.env['organisationDomain'],
+  additionalDomains: process.env['additionalDomains']
 };
 
 console.log("CLOUD CODE " + config.organisationName + " Public Load...");
@@ -107,6 +108,15 @@ Parse.Cloud.define("designUsageById", async (req) => {
   return (usedInOptions);
 });
 
+function validateEmail(email)
+{
+  var isValidEmail = (email.includes(config.organisationDomain) || email.includes("@aamgroup.com") || email.includes("@woolpert.com"));
+  if(!isValidEmail)
+  {
+    isValidEmail = email.includes(config.additionalDomains)
+  }
+}
+
 Parse.Cloud.beforeSave(Parse.User, async (request) => {
   var user = request.object;
 
@@ -115,7 +125,7 @@ Parse.Cloud.beforeSave(Parse.User, async (request) => {
   {
     console.log("beforeSave: guest");
   }
-  else if(user.attributes.email && (user.attributes.email.includes(config.organisationDomain) || user.attributes.email.includes("@aamgroup.com")))
+  else if(user.attributes.email && validateEmail(user.attributes.email))
   {
     console.log("beforeSave: " + user.attributes.email);
     throw(new Error("You are not authorised to sign up"));
@@ -135,7 +145,7 @@ Parse.Cloud.afterSave(Parse.User, async (request) => {
     console.log("afterSave: guest");
     return addUserToRole(user, "Guest");
   }
-  else if(user.attributes.email && (user.attributes.email.includes(config.organisationDomain) || user.attributes.email.includes("@aamgroup.com")))
+  else if(user.attributes.email && validateEmail(user.attributes.email))
   {
     console.log("afterSave: " + user.attributes.email);
     throw(new Error("You are not authorised"));
