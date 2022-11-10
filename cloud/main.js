@@ -447,12 +447,14 @@ function validateEmail(email) {
   var isValidEmail =  (email.includes(config.organisationDomain) || email.includes("@aamgroup.com") || email.includes("@woolpert.com"))
   if(!isValidEmail)
   {
+    console.log("Additional domains: " + config.additionalDomains);
     if(config.additionalDomains && config.additionalDomains.length > 0)
     {
-      domainList = config.additionalDomains.split();
+      domainList = config.additionalDomains.split(";");
       for(var i=0;i<domainList.length;i++)
       {
         var checkDomain = domainList[i];
+        console.log("Checking domain: " + checkDomain);
         if(email.includes(checkDomain))
         {
           isValidEmail = true;
