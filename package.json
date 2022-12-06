@@ -1,6 +1,6 @@
 {
   "name": "parse-server-example",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "description": "An example Parse API server using the parse-server module",
   "repository": {
     "type": "git",
@@ -9,37 +9,34 @@
   "license": "MIT",
   "main": "index.js",
   "scripts": {
+    "start": "node index.js",
+    "deploy": "./deploy.sh",
     "coverage": "nyc jasmine",
     "lint": "eslint --cache ./cloud && eslint --cache index.js && eslint --cache ./spec",
     "lint-fix": "eslint --cache --fix ./cloud && eslint --cache --fix index.js && eslint --cache --fix ./spec",
     "prettier": "prettier --write '{cloud,spec}/{**/*,*}.js' 'index.js'",
-    "start": "node index.js",
     "test": "mongodb-runner start && jasmine",
     "watch": "nodemon index.js"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.58.0",
-    "@aws-sdk/client-ses": "^3.58.0",
-    "@aws-sdk/s3-request-presigner": "^3.58.0",
-    "express": "4.18.1",
+    "@aws-sdk/client-s3": "^3.224.0",
+    "@aws-sdk/client-ses": "^3.224.0",
+    "@aws-sdk/s3-request-presigner": "^3.224.0",
+    "express": "4.18.2",
     "handlebars": "^4.7.7",
-    "parse": "~3.4.1",
+    "parse": "3.3.0",
     "parse-server": "github:aam3d/parse-server#aam-4.10.20-built",
     "parse-server-s3-adapter": "github:aam3d/parse-server-s3-adapter",
     "parse-server-simple-ses-adapter-with-template": "github:aam3d/parse-server-simple-ses-adapter#template"
   },
-  "scripts": {
-    "start": "node index.js",
-    "deploy": "./deploy.sh"
-  },
   "devDependencies": {
-    "@babel/eslint-parser": "7.17.0",
-    "eslint": "8.15.0",
-    "jasmine": "4.1.0",
+    "@babel/eslint-parser": "7.19.1",
+    "eslint": "8.29.0",
+    "jasmine": "4.5.0",
     "mongodb-runner": "4.9.0",
-    "nodemon": "2.0.16",
+    "nodemon": "2.0.20",
     "nyc": "15.1.0",
-    "prettier": "2.6.2"
+    "prettier": "2.8.0"
   },
   "engines": {
     "node": ">=12.22.10 <19"
