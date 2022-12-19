@@ -1,22 +1,22 @@
 // Example express application adding the parse-server module to expose Parse
 // compatible API routes.
 
-var express = require('express');
-var ParseServer = require('parse-server').ParseServer;
-var path = require('path');
+const express = require('express');
+const ParseServer = require('parse-server').ParseServer;
+const path = require('path');
 
-var app = express();
+const app = express();
 
-var config = {};
+const config = {};
 
 config.sesAPIKey = process.env['sesAPIKey'];
 config.sesAPISecret = process.env['sesAPISecret'];
-var mongoURL = process.env['mongoDatabaseURL'];
-var mongoPort = process.env['mongoDatabasePort'];
-var mongoUser = process.env['mongoDatabaseUser'];
-var mongoPass = process.env['mongoDatabasePassword'];
-var mongoDatabase = process.env['mongoDatabaseName'];
-var mongoDatabaseURI = 'mongodb://' + mongoUser + ":" + mongoPass + '@' + mongoURL + ":" + mongoPort + '/' + mongoDatabase;
+const mongoURL = process.env['mongoDatabaseURL'];
+const mongoPort = process.env['mongoDatabasePort'];
+const mongoUser = process.env['mongoDatabaseUser'];
+const mongoPass = process.env['mongoDatabasePassword'];
+const mongoDatabase = process.env['mongoDatabaseName'];
+const mongoDatabaseURI = 'mongodb://' + mongoUser + ":" + mongoPass + '@' + mongoURL + ":" + mongoPort + '/' + mongoDatabase;
 config.mongoDatabaseURI = mongoDatabaseURI
 config.appId = process.env['appId'];
 config.masterKey = process.env['masterKey'];
@@ -29,10 +29,10 @@ config.organisationName = process.env['organisationName'];
 config.organisationDomain = process.env['organisationDomain'];
 config.domainName = process.env['domainName'];
 
-var baseServerUrl = 'http://localhost:' + config.port + '/' + config.organisationId;
-var publicBaseServerUrl = 'https://' + config.domainName + '/' + config.organisationId;
+const baseServerUrl = 'http://localhost:' + config.port + '/' + config.organisationId;
+const publicBaseServerUrl = 'https://' + config.domainName + '/' + config.organisationId;
 
-var publicServer = new ParseServer({
+const publicServer = new ParseServer({
     databaseURI: config.mongoDatabaseURI,
     cloud: 'cloud/main-public.js',
     appId: config.appId,
@@ -86,19 +86,16 @@ var publicServer = new ParseServer({
 });
 app.use('/' + config.organisationId + '/parse', publicServer);
 
-app.get('/' + config.organisationId + '/hello', function (req, res)
-{
+app.get('/' + config.organisationId + '/hello', function (req, res) {
     res.status(200).send("Hello," + config.organisationId + '! ' + Date.now());
 });
 
-app.get('/health', function (req, res)
-{
+app.get('/health', function (req, res) {
     res.status(200).send("HEALTHY");
 });
 
 app.use('/' + config.organisationId + '/templates', express.static(path.join(__dirname, '/templates')));
 
-app.listen(config.port, function ()
-{
+app.listen(config.port, function () {
     console.log('parse-server (' + config.organisationId + ') running on port ' + config.port);
 });

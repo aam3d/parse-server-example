@@ -20,11 +20,10 @@ const config = {
 console.log("CLOUD CODE " + config.organisationName + " Private Load...");
 
 // Parse.Cloud.define("initSchema", async (req) => {
-//   var 
+//   var
 // });
 
 function parseTemplate(data, template) {
-  const { user, appName } = data;
   return new Promise((resolve, reject) => {
     fs.readFile(
       path.join(__dirname, template),
@@ -78,21 +77,21 @@ function sendDownloadMail(data) {
     ],
   };
 
-  var sesClient = new SESClient({ region: "ap-southeast-2" });
-  var sendCommand = new SendEmailCommand(params);
+  const sesClient = new SESClient({ region: "ap-southeast-2" });
+  const sendCommand = new SendEmailCommand(params);
   return sesClient.send(sendCommand);
 }
 
 Parse.Cloud.define("getDownloadEmail", async (req) => {
-  var fileIds = req.params.fileIds;
-  var client = new S3Client({ region: 'ap-southeast-2' });
+  const fileIds = req.params.fileIds;
+  const client = new S3Client({ region: 'ap-southeast-2' });
 
-  var lasEnabled = true;
-  var intensityEnabled = true;
-  var dtmEnabled = true;
+  let lasEnabled = true;
+  let intensityEnabled = true;
+  let dtmEnabled = true;
   // var hillshadeEnabled = false;
-  var contoursEnabled = false;
-  var metadataEnabled = false;
+  let contoursEnabled = false;
+  let metadataEnabled = false;
 
   req.params.desiredTypes.includes("las") ? lasEnabled = true : lasEnabled = false;
   req.params.desiredTypes.includes("intensity") ? intensityEnabled = true : intensityEnabled = false;
@@ -101,12 +100,12 @@ Parse.Cloud.define("getDownloadEmail", async (req) => {
   req.params.desiredTypes.includes("contours") ? contoursEnabled = true : contoursEnabled = false;
   req.params.desiredTypes.includes("metadata") ? metadataEnabled = true : metadataEnabled = false;
 
-  var downloads = [];
+  const downloads = [];
 
-  var las_downloads = [];
+  const las_downloads = [];
   if (lasEnabled) {
     await Promise.all(fileIds.map(async (fileId) => {
-      var getObjectParams = {
+      const getObjectParams = {
         Bucket: "aam-geocirrus-transfer",
         Key: config.organisationId + "/las/" + fileId + "_las.zip"
       };
@@ -116,7 +115,7 @@ Parse.Cloud.define("getDownloadEmail", async (req) => {
         expiresIn: 43200 // 12 Hours
       });
 
-      var download = {
+      const download = {
         type: "las",
         title: fileId,
         url: url
@@ -126,10 +125,10 @@ Parse.Cloud.define("getDownloadEmail", async (req) => {
     }));
   }
 
-  var intensity_downloads = [];
+  const intensity_downloads = [];
   if (intensityEnabled) {
     await Promise.all(fileIds.map(async (fileId) => {
-      var getObjectParams = {
+      const getObjectParams = {
         Bucket: "aam-geocirrus-transfer",
         Key: config.organisationId + "/intensity_imagery/" + fileId + "_int.zip"
       };
@@ -140,7 +139,7 @@ Parse.Cloud.define("getDownloadEmail", async (req) => {
       });
 
 
-      var download = {
+      const download = {
         type: "intensity",
         title: fileId,
         url: url
@@ -164,7 +163,6 @@ Parse.Cloud.define("getDownloadEmail", async (req) => {
   //       expiresIn: 43200 // 12 Hours
   //     });
 
-      
 
   //     var download = {
   //       type: "hillshade",
@@ -176,11 +174,11 @@ Parse.Cloud.define("getDownloadEmail", async (req) => {
   //   }));
   // }
 
-  var dtm_downloads = [];
+  const dtm_downloads = [];
   if (dtmEnabled) {
 
     await Promise.all(fileIds.map(async (fileId) => {
-      var getObjectParams = {
+      const getObjectParams = {
         Bucket: "aam-geocirrus-transfer",
         Key: config.organisationId + "/be_rasters/" + fileId + "_dtm.zip"
       };
@@ -190,7 +188,7 @@ Parse.Cloud.define("getDownloadEmail", async (req) => {
         expiresIn: 43200 // 12 Hours
       });
 
-      var download = {
+      const download = {
         type: "dtm",
         title: fileId,
         url: url
@@ -201,11 +199,11 @@ Parse.Cloud.define("getDownloadEmail", async (req) => {
   }
 
 
-  var metadata_downloads = [];
+  const metadata_downloads = [];
   if (metadataEnabled) {
 
     await Promise.all(fileIds.map(async (fileId) => {
-      var getObjectParams = {
+      const getObjectParams = {
         Bucket: "aam-geocirrus-transfer",
         Key: config.organisationId + "/metadata/" + fileId + "_meta.zip"
       };
@@ -215,7 +213,7 @@ Parse.Cloud.define("getDownloadEmail", async (req) => {
         expiresIn: 43200 // 12 Hours
       });
 
-      var download = {
+      const download = {
         type: "metadata",
         title: fileId,
         url: url
@@ -224,10 +222,10 @@ Parse.Cloud.define("getDownloadEmail", async (req) => {
       metadata_downloads.push(download);
     }));
   }
-  var contour_downloads = [];
+  const contour_downloads = [];
   if (contoursEnabled) {
     await Promise.all(fileIds.map(async (fileId) => {
-      var getObjectParams = {
+      const getObjectParams = {
         Bucket: "aam-geocirrus-transfer",
         Key: config.organisationId + "/contours/" + fileId + "_cnt.zip"
       };
@@ -237,7 +235,7 @@ Parse.Cloud.define("getDownloadEmail", async (req) => {
         expiresIn: 43200 // 12 Hours
       });
 
-      var download = {
+      const download = {
         type: "contours",
         title: fileId,
         url: url
@@ -247,7 +245,7 @@ Parse.Cloud.define("getDownloadEmail", async (req) => {
     }));
   }
 
-  var createEmailData = {
+  const createEmailData = {
     user: {
       username: req.user.attributes.email,
       email: req.user.attributes.username
@@ -262,12 +260,12 @@ Parse.Cloud.define("getDownloadEmail", async (req) => {
     metadata_downloads: metadata_downloads,
   }
 
-  var parseTxtPromise = parseTemplate(createEmailData, "text-template.txt");
-  var parseHtmlPromise = parseTemplate(createEmailData, "email-template.html");
+  const parseTxtPromise = parseTemplate(createEmailData, "text-template.txt");
+  const parseHtmlPromise = parseTemplate(createEmailData, "email-template.html");
 
-  var data = await Promise.all([parseTxtPromise, parseHtmlPromise])
+  const data = await Promise.all([parseTxtPromise, parseHtmlPromise])
 
-  var mailData = {
+  const mailData = {
     text: data[0],
     html: data[1],
     // to: user.get("email") || user.get("username"),
@@ -275,7 +273,7 @@ Parse.Cloud.define("getDownloadEmail", async (req) => {
     from: "no-reply@geocirrus.com",
     subject: "Download links " + createEmailData.appName,
   };
-  var sendResult = await sendDownloadMail(mailData);
+  const sendResult = await sendDownloadMail(mailData);
   console.log(sendResult);
 
   return true;
@@ -309,9 +307,9 @@ Parse.Cloud.define("getDownloadEmail", async (req) => {
   });
 
 Parse.Cloud.define("getDownload", async (req) => {
-  var fileId = req.params.fileId;
-  var client = new S3Client({ region: 'ap-southeast-2' });
-  var getObjectParams = {
+  const fileId = req.params.fileId;
+  const client = new S3Client({ region: 'ap-southeast-2' });
+  const getObjectParams = {
     Bucket: "aam-geocirrus-transfer",
     Key: config.organisationId + "/" + fileId + ".las"
   };
@@ -341,8 +339,8 @@ Parse.Cloud.define("getDownload", async (req) => {
 
 Parse.Cloud.define("getToken", async (req) => {
   try {
-    let expiration = "600"; //10 Hours
-    let response = await Parse.Cloud.httpRequest({
+    const expiration = "600"; //10 Hours
+    const response = await Parse.Cloud.httpRequest({
       method: 'POST',
       headers: {
         "Content-Type": "application/x-www-form-urlencoded"
@@ -384,19 +382,19 @@ Parse.Cloud.define("getToken", async (req) => {
   });
 
 Parse.Cloud.define("gltfUsageById", async (req) => {
-  var Design = Parse.Object.extend("Design");
+  const Design = Parse.Object.extend("Design");
   const query = new Parse.Query(Design);
   const designs = await query.find({ useMasterKey: true });
-  var usedInDesigns = [];
-  for (var i = 0; i < designs.length; i++) {
-    var design = designs[i]
+  const usedInDesigns = [];
+  for (let i = 0; i < designs.length; i++) {
+    const design = designs[i]
 
-    for (var j = 0; j < design.attributes.sketchItems.length; j++) {
-      var item = design.attributes.sketchItems[j];
+    for (let j = 0; j < design.attributes.sketchItems.length; j++) {
+      const item = design.attributes.sketchItems[j];
       if (item && item.attributes && item.attributes.gltfId) {
         if (item.attributes.gltfId == req.params.id) {
-          var publicRead = design.attributes.ACL.getPublicReadAccess();
-          var roleRead = design.attributes.ACL.getRoleReadAccess(config.organisationId);
+          const publicRead = design.attributes.ACL.getPublicReadAccess();
+          const roleRead = design.attributes.ACL.getRoleReadAccess(config.organisationId);
           usedInDesigns.push({ id: design.id, title: design.attributes.name, creator: design.attributes.creator, public: publicRead, role: roleRead });
           break;
         }
@@ -410,29 +408,29 @@ Parse.Cloud.define("gltfUsageById", async (req) => {
   });
 
 Parse.Cloud.define("designUsageById", async (req) => {
-  var Project = Parse.Object.extend("Project");
-  var ProjectOption = Parse.Object.extend("ProjectOption");
-  var projectQuery = new Parse.Query(Project);
-  var projects = await projectQuery.find({ useMasterKey: true });
-  var idList = {};
-  for (var j = 0; j < projects.length; j++) {
-    var currentProject = projects[j];
-    var optionIds = currentProject.attributes.optionIds;
-    for (var k = 0; k < optionIds.length; k++) {
-      var currentId = optionIds[k];
+  const Project = Parse.Object.extend("Project");
+  const ProjectOption = Parse.Object.extend("ProjectOption");
+  const projectQuery = new Parse.Query(Project);
+  const projects = await projectQuery.find({ useMasterKey: true });
+  const idList = {};
+  for (let j = 0; j < projects.length; j++) {
+    const currentProject = projects[j];
+    const optionIds = currentProject.attributes.optionIds;
+    for (let k = 0; k < optionIds.length; k++) {
+      const currentId = optionIds[k];
       idList[currentId] = currentId;
     }
   }
 
-  var usedInOptions = [];
+  const usedInOptions = [];
 
   for (const property in idList) {
     const query = new Parse.Query(ProjectOption);
     const option = await query.get(property, { useMasterKey: true });
 
     if (option.attributes.designId == req.params.id) {
-      var publicRead = option.attributes.ACL.getPublicReadAccess();
-      var roleRead = option.attributes.ACL.getRoleReadAccess(config.organisationId);
+      const publicRead = option.attributes.ACL.getPublicReadAccess();
+      const roleRead = option.attributes.ACL.getRoleReadAccess(config.organisationId);
       usedInOptions.push({ id: option.id, title: option.attributes.title, creator: option.attributes.creator, public: publicRead, role: roleRead });
     }
   }
@@ -444,19 +442,15 @@ Parse.Cloud.define("designUsageById", async (req) => {
   });
 
 function validateEmail(email) {
-  var isValidEmail =  (email.includes(config.organisationDomain) || email.includes("@aamgroup.com") || email.includes("@woolpert.com"))
-  if(!isValidEmail)
-  {
+  let isValidEmail = (email.includes(config.organisationDomain) || email.includes("@aamgroup.com") || email.includes("@woolpert.com"))
+  if (!isValidEmail) {
     console.log("Additional domains: " + config.additionalDomains);
-    if(config.additionalDomains && config.additionalDomains.length > 0)
-    {
-      domainList = config.additionalDomains.split(";");
-      for(var i=0;i<domainList.length;i++)
-      {
-        var checkDomain = domainList[i];
+    if (config.additionalDomains && config.additionalDomains.length > 0) {
+      const domainList = config.additionalDomains.split(",");
+      for (let i = 0; i < domainList.length; i++) {
+        const checkDomain = domainList[i];
         console.log("Checking domain: " + checkDomain);
-        if(email.includes(checkDomain))
-        {
+        if (email.includes(checkDomain)) {
           isValidEmail = true;
           break;
         }
@@ -470,7 +464,7 @@ function validateInternalEmail(email) {
 }
 
 Parse.Cloud.beforeSave(Parse.User, async (request) => {
-  var user = request.object;
+  const user = request.object;
 
   // console.log("afterSave", JSON.stringify(user.attributes, null, 2));
   if (user.attributes.authData && user.attributes.authData.anonymous) {
@@ -494,7 +488,7 @@ Parse.Cloud.beforeSave(Parse.User, async (request) => {
 });
 
 Parse.Cloud.afterSave(Parse.User, async (request) => {
-  var user = request.object;
+  const user = request.object;
 
   // console.log("afterSave", JSON.stringify(user.attributes, null, 2));
   if (user.attributes.authData && user.attributes.authData.anonymous) {
@@ -504,8 +498,8 @@ Parse.Cloud.afterSave(Parse.User, async (request) => {
   else if (user.attributes.email && validateEmail(user.attributes.email)) {
     console.log("afterSave: " + user.attributes.email);
     //  console.log(config.organisationId + " USER");
-    var addToOrgPromise = addUserToRole(user, config.organisationId);
-    var addToMemberPromise = addUserToRole(user, "Member");
+    const addToOrgPromise = addUserToRole(user, config.organisationId);
+    const addToMemberPromise = addUserToRole(user, "Member");
     return Promise.all([addToOrgPromise, addToMemberPromise]);
   }
   else {
@@ -515,13 +509,13 @@ Parse.Cloud.afterSave(Parse.User, async (request) => {
 
 function addUserToRole(user, roleName) {
   // console.log("ADD USER TO ROLE");
-  var query = new Parse.Query(Parse.Role);
+  const query = new Parse.Query(Parse.Role);
   query.contains("name", roleName);
   return query.find({ useMasterKey: true }).then((roles) => {
     if (roles.length > 0) {
-      var savePromises = [];
+      const savePromises = [];
       // console.log("Found Roles" + roles);
-      for (var i = 0; i < roles.length; i++) {
+      for (let i = 0; i < roles.length; i++) {
         // console.log("role[" + i + "]" + roles[i]);
         roles[i].getUsers().add(user);
         // console.log("add");
@@ -532,17 +526,17 @@ function addUserToRole(user, roleName) {
     }
     else {
       // console.log("No Roles Found");
-      var roleACL = new Parse.ACL();
+      const roleACL = new Parse.ACL();
       // console.log("1");
       roleACL.setPublicReadAccess(true);
       // console.log("2");
       roleACL.setPublicWriteAccess(false);
       // console.log("3");
-      var organisationRole = new Parse.Role(roleName, roleACL);
+      const organisationRole = new Parse.Role(roleName, roleACL);
       // console.log("4");
       organisationRole.getUsers().add(user);
       // console.log("5");
-      var savePromise = organisationRole.save(null, { useMasterKey: true });
+      const savePromise = organisationRole.save(null, { useMasterKey: true });
       // console.log("6");
       return savePromise;
     }

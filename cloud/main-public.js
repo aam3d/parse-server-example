@@ -1,4 +1,4 @@
-// const logger = require('parse-server').logger; 
+// const logger = require('parse-server').logger;
 
 const config = {
   username: process.env['portalUser'],
@@ -13,14 +13,13 @@ const config = {
 console.log("CLOUD CODE " + config.organisationName + " Public Load...");
 
 // Parse.Cloud.define("initSchema", async (req) => {
-//   var 
+//   var
 // });
 
 Parse.Cloud.define("getToken", async (req) => {
-  try
-  {
-    let expiration = "180"; // 3 Hours
-    let response = await Parse.Cloud.httpRequest({
+  try {
+    const expiration = "180"; // 3 Hours
+    const response = await Parse.Cloud.httpRequest({
       method: 'POST',
       headers: {
         "Content-Type": "application/x-www-form-urlencoded"
@@ -38,8 +37,7 @@ Parse.Cloud.define("getToken", async (req) => {
     });
     return response.text;
   }
-  catch (ex)
-  {
+  catch (ex) {
     console.log(ex, ex.stack);
     throw ("exception saving" + ex);
     // return false;
@@ -47,23 +45,19 @@ Parse.Cloud.define("getToken", async (req) => {
 });
 
 Parse.Cloud.define("gltfUsageById", async (req) => {
-  var Design = Parse.Object.extend("Design");
+  const Design = Parse.Object.extend("Design");
   const query = new Parse.Query(Design);
   const designs = await query.find({ useMasterKey: true });
-  var usedInDesigns = [];
-  for (var i = 0; i < designs.length; i++)
-  {
-    var design = designs[i]
+  const usedInDesigns = [];
+  for (let i = 0; i < designs.length; i++) {
+    const design = designs[i]
 
-    for (var j = 0; j < design.attributes.sketchItems.length; j++)
-    {
-      var item = design.attributes.sketchItems[j];
-      if (item && item.attributes && item.attributes.gltfId)
-      {
-        if (item.attributes.gltfId == req.params.id)
-        {
-          var publicRead = design.attributes.ACL.getPublicReadAccess();
-          var roleRead = design.attributes.ACL.getRoleReadAccess(config.organisationId);
+    for (let j = 0; j < design.attributes.sketchItems.length; j++) {
+      const item = design.attributes.sketchItems[j];
+      if (item && item.attributes && item.attributes.gltfId) {
+        if (item.attributes.gltfId == req.params.id) {
+          const publicRead = design.attributes.ACL.getPublicReadAccess();
+          const roleRead = design.attributes.ACL.getRoleReadAccess(config.organisationId);
           usedInDesigns.push({ id: design.id, title: design.attributes.name, creator: design.attributes.creator, public: publicRead, role: roleRead });
           break;
         }
@@ -74,33 +68,29 @@ Parse.Cloud.define("gltfUsageById", async (req) => {
 });
 
 Parse.Cloud.define("designUsageById", async (req) => {
-  var Project = Parse.Object.extend("Project");
-  var ProjectOption = Parse.Object.extend("ProjectOption");
-  var projectQuery = new Parse.Query(Project);
-  var projects = await projectQuery.find({ useMasterKey: true });
-  var idList = {};
-  for(var j = 0; j < projects.length; j++)
-  {
-    var currentProject = projects[j];
-    var optionIds = currentProject.attributes.optionIds;
-    for(var k = 0; k < optionIds.length; k++)
-    {
-      var currentId = optionIds[k];
+  const Project = Parse.Object.extend("Project");
+  const ProjectOption = Parse.Object.extend("ProjectOption");
+  const projectQuery = new Parse.Query(Project);
+  const projects = await projectQuery.find({ useMasterKey: true });
+  const idList = {};
+  for (let j = 0; j < projects.length; j++) {
+    const currentProject = projects[j];
+    const optionIds = currentProject.attributes.optionIds;
+    for (let k = 0; k < optionIds.length; k++) {
+      const currentId = optionIds[k];
       idList[currentId] = currentId;
     }
   }
 
-  var usedInOptions = [];
+  const usedInOptions = [];
 
-  for(const property in idList)
-  {
+  for (const property in idList) {
     const query = new Parse.Query(ProjectOption);
     const option = await query.get(property, { useMasterKey: true });
 
-    if(option.attributes.designId == req.params.id)
-    {
-      var publicRead = option.attributes.ACL.getPublicReadAccess();
-      var roleRead = option.attributes.ACL.getRoleReadAccess(config.organisationId);
+    if (option.attributes.designId == req.params.id) {
+      const publicRead = option.attributes.ACL.getPublicReadAccess();
+      const roleRead = option.attributes.ACL.getRoleReadAccess(config.organisationId);
       usedInOptions.push({ id: option.id, title: option.attributes.title, creator: option.attributes.creator, public: publicRead, role: roleRead });
     }
   }
@@ -108,99 +98,87 @@ Parse.Cloud.define("designUsageById", async (req) => {
   return (usedInOptions);
 });
 
-function validateEmail(email)
-{
-  var isValidEmail = (email.includes(config.organisationDomain) || email.includes("@aamgroup.com") || email.includes("@woolpert.com"));
-  if(!isValidEmail)
-  {
+function validateEmail(email) {
+  let isValidEmail = (email.includes(config.organisationDomain) || email.includes("@aamgroup.com") || email.includes("@woolpert.com"));
+  if (!isValidEmail) {
     isValidEmail = email.includes(config.additionalDomains)
   }
 }
 
 Parse.Cloud.beforeSave(Parse.User, async (request) => {
-  var user = request.object;
+  const user = request.object;
 
   // console.log("afterSave", JSON.stringify(user.attributes, null, 2));
-  if(user.attributes.authData && user.attributes.authData.anonymous)
-  {
+  if (user.attributes.authData && user.attributes.authData.anonymous) {
     console.log("beforeSave: guest");
   }
-  else if(user.attributes.email && validateEmail(user.attributes.email))
-  {
+  else if (user.attributes.email && validateEmail(user.attributes.email)) {
     console.log("beforeSave: " + user.attributes.email);
-    throw(new Error("You are not authorised to sign up"));
+    throw (new Error("You are not authorised to sign up"));
   }
-  else
-  {
+  else {
     console.log("beforeSave: OTHER");
   }
 });
 
 Parse.Cloud.afterSave(Parse.User, async (request) => {
-  var user = request.object;
+  const user = request.object;
 
   // console.log("afterSave", JSON.stringify(user.attributes, null, 2));
-  if(user.attributes.authData && user.attributes.authData.anonymous)
-  {
+  if (user.attributes.authData && user.attributes.authData.anonymous) {
     console.log("afterSave: guest");
     return addUserToRole(user, "Guest");
   }
-  else if(user.attributes.email && validateEmail(user.attributes.email))
-  {
+  else if (user.attributes.email && validateEmail(user.attributes.email)) {
     console.log("afterSave: " + user.attributes.email);
-    throw(new Error("You are not authorised"));
+    throw (new Error("You are not authorised"));
 
     //  var addToOrgPromise = addUserToRole(user, config.organisationId);
     //  var addToMemberPromise = addUserToRole(user, "Member");
     //  return Promise.all([addToOrgPromise,addToMemberPromise]);
   }
-  else
-  {
+  else {
     console.log("afterSave: OTHER");
   }
 });
 
 function addUserToRole(user, roleName) {
-    // console.log("ADD USER TO ROLE");
-    var query = new Parse.Query(Parse.Role);
-    query.contains("name", roleName);
-    return query.find({ useMasterKey: true }).then((roles) =>
-    {
-        if (roles.length > 0)
-        {
-            var savePromises = [];
-            // console.log("Found Roles" + roles);
-            for (var i = 0; i < roles.length; i++)
-            {
-                // console.log("role[" + i + "]" + roles[i]);
-                roles[i].getUsers().add(user);
-                // console.log("add");
-                savePromises.push(roles[i].save(null, { useMasterKey: true }));
-            }
-            // console.log("added");
-            return Promise.all(savePromises);
-        }
-        else
-        {
-            // console.log("No Roles Found");
-            var roleACL = new Parse.ACL();
-            // console.log("1");
-            roleACL.setPublicReadAccess(true);
-            // console.log("2");
-            roleACL.setPublicWriteAccess(false);
-            // console.log("3");
-            var organisationRole = new Parse.Role(roleName, roleACL);
-            // console.log("4");
-            organisationRole.getUsers().add(user);
-            // console.log("5");
-            var savePromise = organisationRole.save(null, { useMasterKey: true });
-            // console.log("6");
-            return savePromise;
-        }
-    }).catch( (error) => {
-        console.log(error);
-        return Promise.reject();
-    });
+  // console.log("ADD USER TO ROLE");
+  const query = new Parse.Query(Parse.Role);
+  query.contains("name", roleName);
+  return query.find({ useMasterKey: true }).then((roles) => {
+    if (roles.length > 0) {
+      const savePromises = [];
+      // console.log("Found Roles" + roles);
+      for (let i = 0; i < roles.length; i++) {
+        // console.log("role[" + i + "]" + roles[i]);
+        roles[i].getUsers().add(user);
+        // console.log("add");
+        savePromises.push(roles[i].save(null, { useMasterKey: true }));
+      }
+      // console.log("added");
+      return Promise.all(savePromises);
+    }
+    else {
+      // console.log("No Roles Found");
+      const roleACL = new Parse.ACL();
+      // console.log("1");
+      roleACL.setPublicReadAccess(true);
+      // console.log("2");
+      roleACL.setPublicWriteAccess(false);
+      // console.log("3");
+      const organisationRole = new Parse.Role(roleName, roleACL);
+      // console.log("4");
+      organisationRole.getUsers().add(user);
+      // console.log("5");
+      const savePromise = organisationRole.save(null, { useMasterKey: true });
+      // console.log("6");
+      return savePromise;
+    }
+  }).catch((error) => {
+    console.log(error);
+    return Promise.reject();
+  });
 }
 
 console.log("CLOUD CODE " + config.organisationName + " Loaded");
