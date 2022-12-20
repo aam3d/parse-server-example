@@ -181,4 +181,4 @@ function addUserToRole(user, roleName) {
   });
 }
 
-console.log("CLOUD CODE " + config.organisationName + " Loaded");
+console.log("CLOUD CODE " + config.organisationName + " Public Loaded");
