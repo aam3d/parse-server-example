@@ -446,7 +446,7 @@ function validateEmail(email) {
   if (!isValidEmail) {
     console.log("Additional domains: " + config.additionalDomains);
     if (config.additionalDomains && config.additionalDomains.length > 0) {
-      const domainList = config.additionalDomains.split(",");
+      const domainList = config.additionalDomains.split(";");
       for (let i = 0; i < domainList.length; i++) {
         const checkDomain = domainList[i];
         console.log("Checking domain: " + checkDomain);
