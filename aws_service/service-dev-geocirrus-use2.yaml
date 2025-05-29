@@ -108,7 +108,7 @@ Resources:
   TargetGroup:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
     Properties:
-      VpcId: vpc-0f4410a849a48769d
+      VpcId: vpc-09efc052f6ab2767e
       Port: 8080
       Protocol: HTTP
       Matcher:
