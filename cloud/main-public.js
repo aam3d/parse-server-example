@@ -16,23 +16,42 @@ console.log("CLOUD CODE " + config.organisationName + " Public Load...");
 //   var
 // });
 
+// ?grant_type=client_credentials&client_id=sv3FmbwGINTNgrho&client_secret=5859139efb0a477cac446c83d81facf8
 Parse.Cloud.define("getToken", async (req) => {
+  // try {
+  //   const expiration = "180"; // 3 Hours
+  //   const response = await Parse.Cloud.httpRequest({
+  //     method: 'POST',
+  //     headers: {
+  //       "Content-Type": "application/x-www-form-urlencoded"
+  //     },
+  //     url: config.url,
+  //     body: {
+  //       username: config.username,
+  //       password: config.password,
+  //       client: "referer",
+  //       ip: "",
+  //       referer: req.params.referer,
+  //       expiration: expiration,
+  //       f: "json"
+  //     }
+  //   });
+  //   return response.text;
+  // }
   try {
     const expiration = "180"; // 3 Hours
     const response = await Parse.Cloud.httpRequest({
-      method: 'POST',
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded"
-      },
-      url: config.url,
-      body: {
-        username: config.username,
-        password: config.password,
-        client: "referer",
-        ip: "",
-        referer: req.params.referer,
+      method: 'GET',
+      // headers: {
+      //   "Content-Type": "application/x-www-form-urlencoded"
+      // },
+      // url: config.url,
+      url: "https://www.arcgis.com/sharing/rest/oauth2/token",
+      params: {
+        client_id: config.username,
+        client_secret: config.password,
+        grant_type: "client_credentials",
         expiration: expiration,
-        f: "json"
       }
     });
     return response.text;

@@ -337,23 +337,42 @@ Parse.Cloud.define("getDownload", async (req) => {
     }
   });
 
+
 Parse.Cloud.define("getToken", async (req) => {
+  // try {
+  //   const expiration = "180"; // 3 Hours
+  //   const response = await Parse.Cloud.httpRequest({
+  //     method: 'POST',
+  //     headers: {
+  //       "Content-Type": "application/x-www-form-urlencoded"
+  //     },
+  //     url: config.url,
+  //     body: {
+  //       username: config.username,
+  //       password: config.password,
+  //       client: "referer",
+  //       ip: "",
+  //       referer: req.params.referer,
+  //       expiration: expiration,
+  //       f: "json"
+  //     }
+  //   });
+  //   return response.text;
+  // }
   try {
-    const expiration = "600"; //10 Hours
+    const expiration = "180"; // 3 Hours
     const response = await Parse.Cloud.httpRequest({
-      method: 'POST',
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded"
-      },
-      url: config.url,
-      body: {
-        username: config.username,
-        password: config.password,
-        client: "referer",
-        ip: "",
-        referer: req.params.referer,
+      method: 'GET',
+      // headers: {
+      //   "Content-Type": "application/x-www-form-urlencoded"
+      // },
+      // url: config.url,
+      url: "https://www.arcgis.com/sharing/rest/oauth2/token",
+      params: {
+        client_id: config.username,
+        client_secret: config.password,
+        grant_type: "client_credentials",
         expiration: expiration,
-        f: "json"
       }
     });
     return response.text;
@@ -363,23 +382,7 @@ Parse.Cloud.define("getToken", async (req) => {
     throw ("exception saving" + ex);
     // return false;
   }
-},
-  {
-    fields: {
-      referer: {
-        type: String,
-        required: true,
-        error: "referer is required"
-      }
-    },
-    requireUser: true,
-    requireUserKeys: {
-      emailVerified: {
-        options: true,
-        error: "Only verified users can get a token"
-      }
-    }
-  });
+});
 
 Parse.Cloud.define("gltfUsageById", async (req) => {
   const Design = Parse.Object.extend("Design");
