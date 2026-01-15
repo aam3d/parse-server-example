@@ -366,8 +366,8 @@ Parse.Cloud.define("getToken", async (req) => {
       // headers: {
       //   "Content-Type": "application/x-www-form-urlencoded"
       // },
-      // url: config.url,
-      url: "https://www.arcgis.com/sharing/rest/oauth2/token",
+      url: config.url,
+      // url: "https://www.arcgis.com/sharing/rest/oauth2/token",
       params: {
         client_id: config.username,
         client_secret: config.password,
