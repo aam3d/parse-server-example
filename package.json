@@ -25,6 +25,7 @@
     "express": "4.18.2",
     "handlebars": "4.7.7",
 	"@so-ric/colorspace": "1.1.4",
+	"@dabh/diagnostics": "2.0.2",
     "parse": "3.5.1",
     "parse-server": "github:aam3d/parse-server#aam-4.10.20-built",
     "parse-server-s3-adapter": "github:aam3d/parse-server-s3-adapter",
