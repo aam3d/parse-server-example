@@ -109,7 +109,7 @@ Resources:
         MinimumHealthyPercent: 50
       PlacementStrategies:
       - Type: spread
-        Field: instanceId
+        Field: attribute:ecs.availability-zone
       LoadBalancers: 
       - ContainerName: !Sub aam-ecs-service-parse-${Client}-${Environment}
         ContainerPort: 1343
